@@ -1,0 +1,149 @@
+{
+  "version": 1,
+  "skills": {
+    "animated-component-libraries": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/animated-component-libraries/SKILL.md",
+      "computedHash": "af53d0b6930732ec4cc187351a53a43cdf25f18560fb82be8e1b07dccaf017e1"
+    },
+    "blender-web-pipeline": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/blender-web-pipeline/SKILL.md",
+      "computedHash": "342295a1d79b24a1e8ff4c048da51b9a1dc22d9c01dea183af389c0e4a1297e6"
+    },
+    "cinematic-gsap-lenis-motion-system": {
+      "source": "mengto/skills",
+      "sourceType": "github",
+      "skillPath": "agent-skills/web-design/cinematic-gsap-lenis-motion-system/SKILL.md",
+      "computedHash": "f8908ca80ea5151895154f089696636e0cb28a58e7155454d70d3908998d939e"
+    },
+    "css-animation-creator": {
+      "source": "onewave-ai/claude-skills",
+      "sourceType": "github",
+      "skillPath": "css-animation-creator/SKILL.md",
+      "computedHash": "850ce01a5e263c7065d40fb34fb4dcee3075c89f45fa620a2364c9ca3ca901c2"
+    },
+    "framer-motion-animator": {
+      "source": "patricio0312rev/skills",
+      "sourceType": "github",
+      "skillPath": "frontend/framer-motion-animator/SKILL.md",
+      "computedHash": "d0137ba04049bf8926bc80f6a5e2b82d94b5633b6445a85dbfb26ab4f1b104c6"
+    },
+    "glassmorphism": {
+      "source": "bergside/awesome-design-skills",
+      "sourceType": "github",
+      "skillPath": "skills/glassmorphism/SKILL.md",
+      "computedHash": "c252e09e7d990eeaced228aafa1384532ff0f02e955010dfc26a46c5f3d35862"
+    },
+    "gsap-framer-scroll-animation": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/gsap-framer-scroll-animation/SKILL.md",
+      "computedHash": "e6a4caf23b818ffc5185d51339e941ca783944b6693da877fc1206693b2dff66"
+    },
+    "hover-interactions": {
+      "source": "dylantarre/animation-principles",
+      "sourceType": "github",
+      "skillPath": "skills/05-by-animation-type/hover-interactions/SKILL.md",
+      "computedHash": "a8c213b86cfb4f828421ba77fafc92bc96eff6800cd0f32c9a9363b9790e8482"
+    },
+    "implement_lenis_scroll": {
+      "source": "jerrar670/surf-website",
+      "sourceType": "github",
+      "skillPath": ".agent/skills/implement_lenis_scroll/SKILL.md",
+      "computedHash": "595d911a46b2953b97ad2d77bf3bd59b335a5a728355a8ef1091f3615c08c0db"
+    },
+    "inspira-ui": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/inspira-ui/skills/inspira-ui/SKILL.md",
+      "computedHash": "24a0ef2f22b2335ef68e8abea840da2de753e3842686560285e5e2131984c6c5"
+    },
+    "micro-interaction": {
+      "source": "iart-ai/web-animation-skills",
+      "sourceType": "github",
+      "skillPath": "skills/micro-interaction/SKILL.md",
+      "computedHash": "f236bc97a9f4c0e9c9a045d0b591e3ca6b6b2aeb26e42b661c15211f652ac131"
+    },
+    "micro-interactions": {
+      "source": "dylantarre/animation-principles",
+      "sourceType": "github",
+      "skillPath": "skills/01-by-domain/micro-interactions/SKILL.md",
+      "computedHash": "22a154d2e1a33e32f2946504502849dba5a934ac3654ba625a5807b836272955"
+    },
+    "motion-framer": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/motion-framer/SKILL.md",
+      "computedHash": "16d7c6f24f1d1208500635331e0cf6e06555a44df461e6b1069e4ddb203fd737"
+    },
+    "nextjs-react-typescript": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "skillPath": "nextjs-react-typescript/SKILL.md",
+      "computedHash": "eb995cc826bf48498e0e90969fc7dadfa2ec634002c26cfcfde565134cefa738"
+    },
+    "react-three-fiber": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/react-three-fiber/SKILL.md",
+      "computedHash": "d672dfba48620140185d451bc9b6841833eed4306277776efab2e2a82c7b8fbf"
+    },
+    "scroll-animations": {
+      "source": "dylantarre/animation-principles",
+      "sourceType": "github",
+      "skillPath": "skills/05-by-animation-type/scroll-animations/SKILL.md",
+      "computedHash": "1dd984a631d29f3ede3cbe3302e8998560e5426761a5f57ed7bb4e74cb8ad2a3"
+    },
+    "tailwind-v4-shadcn": {
+      "source": "secondsky/claude-skills",
+      "sourceType": "github",
+      "skillPath": "plugins/tailwind-v4-shadcn/skills/tailwind-v4-shadcn/SKILL.md",
+      "computedHash": "c2b354b64cbd922c8d93121091d079026e2c8a3ca81c07c4f31b6e738c2695f1"
+    },
+    "threejs": {
+      "source": "nexu-io/open-design",
+      "sourceType": "github",
+      "skillPath": "skills/threejs/SKILL.md",
+      "computedHash": "3092a815b2d618723804e855e4fb250e8adb80a1979535ea7d455fbeb3a7f8b5"
+    },
+    "threejs-3d-graphics": {
+      "source": "omer-metin/skills-for-antigravity",
+      "sourceType": "github",
+      "skillPath": "skills/threejs-3d-graphics/SKILL.md",
+      "computedHash": "3ff01b0e46925f84d0d2a709f945c8205d30178dc87cac66bb6c26946b41d7e3"
+    },
+    "typography-system": {
+      "source": "sanky369/vibe-building-skills",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-design/typography-system/SKILL.md",
+      "computedHash": "11b2b57fa799b136d1a6f42057a26f2baa5de7e42dfd36985f34be784c79d6ba"
+    },
+    "ui-ux-polish": {
+      "source": "oakoss/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/ui-ux-polish/SKILL.md",
+      "computedHash": "842c54cf45138aa08e07e7120363384d1f916337e8c46491d49c6ecfacf51c9a"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "a55c93594689ff54fc12a1c40b8c5a418470e306392014667378f8633df105f0"
+    },
+    "web3d-integration-patterns": {
+      "source": "freshtechbro/claudedesignskills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/web3d-integration-patterns/SKILL.md",
+      "computedHash": "e411bbc6e7f7f928b6fd2f209530446cf74dfa1ff9cfd6adb17ba37317d89e9a"
+    },
+    "webgl-expert": {
+      "source": "ronnycoding/.claude",
+      "sourceType": "github",
+      "skillPath": "skills/webgl-expert/SKILL.md",
+      "computedHash": "4e73011c4f7422c369c8c0d89f99340e0bcf37f4379d78767ebf333cda87853a"
+    }
+  }
+}
