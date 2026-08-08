@@ -753,13 +753,18 @@ export const CURVEBALL_QUESTIONS: QuizQuestion[] = [
   },
 ];
 
-// ===== ALL QUESTIONS COMBINED =====
-export const ALL_QUESTIONS: QuizQuestion[] = [
+// ===== THE 50-QUESTION EXAM (regular progression) =====
+export const REGULAR_QUESTIONS: QuizQuestion[] = [
   ...PHASE1_QUESTIONS,
   ...PHASE2_QUESTIONS,
   ...PHASE3_QUESTIONS,
   ...PHASE4_QUESTIONS,
   ...PHASE5_QUESTIONS,
+];
+
+// ===== ALL QUESTIONS COMBINED (used for scoring lookups) =====
+export const ALL_QUESTIONS: QuizQuestion[] = [
+  ...REGULAR_QUESTIONS,
   ...CURVEBALL_QUESTIONS,
 ];
 
@@ -789,67 +794,67 @@ export const TIERS: Record<AuraTier, TierInfo> = {
   ultimate_beast: {
     id: "ultimate_beast",
     name: "ULTIMATE BEAST",
-    emoji: "🌌",
+    emoji: "♠",
     scoreRange: "≥ 18,000",
     minScore: 18000,
     maxScore: Infinity,
-    color: "#00ffff",
-    gradient: "from-cyan-400 via-white to-cyan-400",
+    color: "#111111",
+    gradient: "from-black via-neutral-400 to-black",
     description: "Absolute gravity-bending presence. You operate on pure instinct. The world bends around your choices.",
     narrative: "You exert an absolute, gravity-bending grip on your environment. You operate completely on instinct. The system tracks that you do not think before choosing—your cool actions are second-nature. You don't try to impress the system; the world bends around your choices.",
-    uiEffect: "flashing_iridescent_silver",
+    uiEffect: "halftone_burst",
   },
   giga_chad: {
     id: "giga_chad",
     name: "GIGA CHAD",
-    emoji: "🔱",
+    emoji: "♛",
     scoreRange: "10,000 - 17,999",
     minScore: 10000,
     maxScore: 17999,
-    color: "#a855f7",
-    gradient: "from-purple-400 via-violet-300 to-purple-400",
+    color: "#2b2b2b",
+    gradient: "from-neutral-700 via-neutral-300 to-neutral-700",
     description: "High presence, massive physical confidence. You handle fumbles like an action star.",
     narrative: "High presence, massive physical confidence, and total control over sudden variables. You handle public fumbles like a seasoned action star. The only reason you aren't an Ultimate Beast is that you took a minor split-second fraction longer to process a couple of high-stress social anomalies.",
-    uiEffect: "deep_neon_violet_particles",
+    uiEffect: "crosshatch_aura",
   },
   aura_farmer: {
     id: "aura_farmer",
     name: "AURA FARMER",
-    emoji: "🚜",
+    emoji: "♧",
     scoreRange: "0 - 9,999",
     minScore: 0,
     maxScore: 9999,
-    color: "#f59e0b",
-    gradient: "from-amber-400 via-yellow-300 to-amber-400",
+    color: "#4d4d4d",
+    gradient: "from-neutral-600 via-neutral-300 to-neutral-600",
     description: "The try-hard black hole. You select the coolest options but take too long.",
     narrative: "The Try-Hard Black Hole. You are constantly harvesting the vibe. The system flags that you select the coolest sounding options, but you consistently take over 4 seconds to think about them, or you fail the Consistency Tests. You are acting out a script to appear alpha, but the psychometric algorithm spots the stress and desperation beneath the surface.",
-    uiEffect: "amber_warning_gauge",
+    uiEffect: "warning_gauge",
   },
   clown: {
     id: "clown",
     name: "CLOWN",
-    emoji: "🤡",
+    emoji: "♧",
     scoreRange: "-1 to -4,000",
     minScore: -4000,
     maxScore: -1,
-    color: "#ec4899",
-    gradient: "from-pink-400 via-rose-300 to-pink-400",
+    color: "#666666",
+    gradient: "from-neutral-500 via-neutral-300 to-neutral-500",
     description: "Public chaos incarnate. You drop items, apologize to objects, and laugh off internal screaming.",
     narrative: "You are the epicenter of public chaos. You drop items, apologize to inanimate objects, and try to laugh off situations while internally screaming. Your social adaptability is erratic. You don't mean to destroy the room's energy, but you consistently choose panicked recoveries.",
-    uiEffect: "neon_circus_pink_jitter",
+    uiEffect: "dotted_jitter",
   },
   noob: {
     id: "noob",
     name: "NOOB",
-    emoji: "💀",
+    emoji: "♤",
     scoreRange: "≤ -4,001",
     minScore: -Infinity,
     maxScore: -4001,
-    color: "#ef4444",
-    gradient: "from-red-500 via-red-400 to-red-500",
+    color: "#8a8a8a",
+    gradient: "from-neutral-500 via-neutral-400 to-neutral-500",
     description: "Absolute aura insolvency. You run with rolling backpacks and apologize to wrong-order waiters.",
     narrative: "Absolute, unmitigated Aura Insolvency. You run with a rolling backpack, apologize to waiters who brought you the wrong order, and pretend to look at your phone when you walk into a wall. You are trapped in an ongoing debt cycle to the universe.",
-    uiEffect: "terminal_error_crash",
+    uiEffect: "erased_sketch",
   },
 };
 

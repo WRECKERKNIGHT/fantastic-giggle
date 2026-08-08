@@ -287,33 +287,33 @@ export function analyzeResponsePattern(
     return {
       pattern: "instant",
       description: "Lightning reflexes. You don't think—you act.",
-      icon: "⚡",
+      icon: "\u25C9",
     };
   }
   if (avgTime < 3000) {
     return {
       pattern: "quick",
       description: "Fast and confident. Your instincts are sharp.",
-      icon: "🔥",
+      icon: "\u25C6",
     };
   }
   if (avgTime < 5000) {
     return {
       pattern: "deliberate",
       description: "Thoughtful and measured. You consider before acting.",
-      icon: "🧠",
+      icon: "\u25B2",
     };
   }
   if (avgTime < 8000) {
     return {
       pattern: "hesitant",
       description: "Taking your time. Sometimes too much time.",
-      icon: "🤔",
+      icon: "\u25BC",
     };
   }
   return {
     pattern: "chaotic",
     description: "Erratic timing. Your responses are all over the place.",
-    icon: "🌪️",
+    icon: "\u25D0",
   };
 }
