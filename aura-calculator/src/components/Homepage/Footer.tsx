@@ -1,16 +1,21 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Flame, ExternalLink, Heart } from "lucide-react";
+import { ExternalLink, Heart } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="relative py-16 px-4 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-black to-[#0a0005]" />
+    <footer className="relative overflow-hidden px-4 py-16 paper-grain">
+      <div className="absolute inset-0 bg-[var(--paper-deep)]" />
+      <div className="halftone absolute inset-0 opacity-20" />
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
+      <div className="relative z-10 mx-auto max-w-4xl text-center">
         {/* Divider */}
-        <div className="w-full h-px bg-gradient-to-r from-transparent via-red-500/50 to-transparent mb-12" />
+        <div className="ink-divider mb-12">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 2 L15 9 L22 9 L16.5 14 L18.5 21 L12 17 L5.5 21 L7.5 14 L2 9 L9 9 Z" />
+          </svg>
+        </div>
 
         {/* Logo */}
         <motion.div
@@ -19,12 +24,12 @@ export function Footer() {
           viewport={{ once: true }}
           className="mb-8"
         >
-          <div className="inline-flex items-center gap-3 mb-4">
-            <Flame className="w-8 h-8 text-orange-500" />
-            <span className="text-3xl font-black text-white/90">AURA CALCULATOR</span>
-            <Flame className="w-8 h-8 text-orange-500" />
+          <div className="mb-4 inline-flex items-center gap-3">
+            <span className="font-[var(--font-display)] text-3xl font-black tracking-tight text-[var(--ink)]">
+              GIGACHAD OP METER
+            </span>
           </div>
-          <p className="text-white/40 text-sm">
+          <p className="font-[var(--font-mono)] text-xs uppercase tracking-widest text-[var(--ink-muted)]">
             The most dangerous personality test on the internet.
           </p>
         </motion.div>
@@ -36,28 +41,30 @@ export function Footer() {
           viewport={{ once: true }}
           className="mb-8"
         >
-          <p className="text-white/30 text-sm mb-2">
-            Engineered with psychological precision
+          <p className="mb-2 font-[var(--font-mono)] text-xs uppercase tracking-widest text-[var(--ink-faint)]">
+            Engineered with psychometric precision
           </p>
-          <p className="text-xl font-bold">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500">
-              Made by Harshit Mishra
-            </span>
+          <p className="sketch-underline inline-block font-[var(--font-display)] text-2xl font-black text-[var(--ink)]">
+            Made by Harshit Mishra
           </p>
         </motion.div>
 
         {/* Social links */}
-        <div className="flex items-center justify-center gap-4 mb-8">
+        <div className="mb-8 flex items-center justify-center gap-4">
           {[
-            { icon: <ExternalLink className="w-5 h-5" />, label: "GitHub", href: "https://github.com" },
+            {
+              icon: <ExternalLink className="h-5 w-5" />,
+              label: "GitHub",
+              href: "https://github.com",
+            },
           ].map((social, index) => (
             <motion.a
               key={index}
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:border-orange-500/50 transition-all"
-              whileHover={{ scale: 1.1, y: -2 }}
+              className="flex h-10 w-10 items-center justify-center border-2 border-[var(--ink-line)] text-[var(--ink-soft)] transition-colors hover:bg-[var(--ink)] hover:text-[var(--paper)]"
+              whileHover={{ scale: 1.08, y: -2 }}
               aria-label={social.label}
             >
               {social.icon}
@@ -66,15 +73,14 @@ export function Footer() {
         </div>
 
         {/* Copyright */}
-        <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
+        <div className="flex items-center justify-center gap-2 font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
           <span>Made with</span>
-          <Heart className="w-3 h-3 text-red-500 fill-red-500" />
-          <span>and a lot of</span>
-          <Flame className="w-3 h-3 text-orange-500" />
+          <Heart className="h-3 w-3 fill-[var(--ink)] text-[var(--ink)]" />
+          <span>and a lot of data</span>
         </div>
 
-        <p className="text-white/20 text-xs mt-4">
-          © {new Date().getFullYear()} Aura Calculator. All rights reserved.
+        <p className="mt-4 font-[var(--font-mono)] text-xs text-[var(--ink-faint)]">
+          © {new Date().getFullYear()} GIGACHAD OP METER. All rights reserved. No aura was spared.
         </p>
       </div>
     </footer>

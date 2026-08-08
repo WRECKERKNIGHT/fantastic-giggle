@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HeroSection } from "@/components/Homepage/HeroSection";
 import { RolesSection } from "@/components/Homepage/RolesSection";
@@ -11,29 +10,8 @@ import { DontLieSection } from "@/components/Homepage/DontLieSection";
 import { HowItWorksSection } from "@/components/Homepage/HowItWorksSection";
 import { Footer } from "@/components/Homepage/Footer";
 import { DangerousLoadingScreen } from "@/components/Loading/DangerousLoadingScreen";
-
-const CosmicScene = dynamic(
-  () =>
-    import("@/components3d/CosmicScene").then((mod) => ({
-      default: mod.CosmicScene,
-    })),
-  { ssr: false, loading: () => <div className="fixed inset-0 -z-10 bg-black" /> }
-);
-
-const QuizPage = dynamic(
-  () =>
-    import("@/components/Quiz/QuizPage").then((mod) => ({
-      default: mod.QuizPage,
-    })),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    ),
-  }
-);
+import { QuizPage } from "@/components/Quiz/QuizPage";
+import { CosmicScene } from "@/components3d/CosmicScene";
 
 type AppPhase = "home" | "loading" | "quiz";
 
