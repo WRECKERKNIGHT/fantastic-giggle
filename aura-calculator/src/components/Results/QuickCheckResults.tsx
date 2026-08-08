@@ -24,12 +24,11 @@ function CharacterAvatar({ character, size = "large" }: { character: QuickCharac
     return (
       <div key={character.id} className="relative">
         <AvatarComponent size={svgSize} />
-        {/* Outer glow ring for large */}
+        {/* Outer ink ring for large */}
         {isLarge && (
           <motion.div
-            className="absolute inset-[-8px] rounded-full border-2 opacity-30"
-            style={{ borderColor: character.accentColor }}
-            animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3] }}
+            className="absolute inset-[-10px] rounded-full border-2 border-[var(--ink)]"
+            animate={{ scale: [1, 1.04, 1], opacity: [0.35, 0.6, 0.35] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
         )}
@@ -37,13 +36,13 @@ function CharacterAvatar({ character, size = "large" }: { character: QuickCharac
     );
   }
 
-  // Fallback: gradient circle with emoji
+  // Fallback: ink circle with emoji
   return (
     <motion.div
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
-      className={`${isLarge ? "w-48 h-48 md:w-64 md:h-64" : "w-20 h-20"} rounded-full ${character.avatarBg} flex items-center justify-center relative overflow-hidden`}
+      className={`${isLarge ? "w-48 h-48 md:w-64 md:h-64" : "w-20 h-20"} sketch-card rounded-full flex items-center justify-center relative overflow-hidden`}
     >
       <span className={`${isLarge ? "text-6xl md:text-8xl" : "text-3xl"}`}>{character.emoji}</span>
     </motion.div>
@@ -81,10 +80,10 @@ export function QuickCheckResults() {
 
   if (loading || !result) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)] paper-grain">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/50">Reading your aura...</p>
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[var(--ink)] border-t-transparent" />
+          <p className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">READING YOUR AURA...</p>
         </div>
       </div>
     );
@@ -95,24 +94,32 @@ export function QuickCheckResults() {
   const item = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-gradient-to-b from-black via-[#0a0015] to-black">
+    <div className="relative min-h-screen bg-[var(--paper)] p-4 md:p-8 paper-grain">
+      <div className="halftone absolute inset-0 opacity-30" />
+      <div className="crosshatch-soft absolute inset-0" />
+
       {/* Back button */}
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8 max-w-3xl mx-auto">
+      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-8 max-w-3xl mx-auto relative z-10">
         <button onClick={handleRestart}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-white/60 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+          className="sketch-btn sketch-btn-outline text-sm"
           aria-label="Back to home">
-          <ArrowLeft className="w-4 h-4" />
-          Back to Home
+          <ArrowLeft className="h-4 w-4" />
+          BACK TO HOME
         </button>
       </motion.div>
 
-      <motion.div variants={container} initial="hidden" animate="show" className="space-y-8 max-w-3xl mx-auto">
+      <motion.div variants={container} initial="hidden" animate="show" className="relative z-10 space-y-8 max-w-3xl mx-auto">
         {/* Character reveal */}
         <motion.div variants={item} className="text-center">
-          <motion.div className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 mb-8"
-            animate={{ scale: [1, 1.02, 1] }} transition={{ duration: 3, repeat: Infinity }}>
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-sm font-bold text-purple-400 tracking-wider">QUICK AURA CHECK COMPLETE</span>
+          <motion.div
+            className="stamp mx-auto mb-8"
+            animate={{ rotate: [-1.2, -0.8, -1.2] }}
+            transition={{ duration: 3, repeat: Infinity }}
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              QUICK AURA CHECK COMPLETE
+            </span>
           </motion.div>
 
           {/* Avatar */}
@@ -121,34 +128,34 @@ export function QuickCheckResults() {
           </div>
 
           {/* Name & Title */}
-          <motion.h1 className="text-4xl md:text-6xl font-black mb-2"
-            style={{ color: character.accentColor, textShadow: `0 0 40px ${character.accentColor}60` }}>
-            {character.name}
+          <motion.h1 className="font-[var(--font-display)] text-5xl md:text-7xl font-black mb-2 uppercase text-[var(--ink)]">
+            <span className="sketch-underline">{character.name}</span>
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-            className="text-xl text-white/60 font-bold mb-4">
-            {character.title}
+            className="font-[var(--font-mono)] text-xl font-bold text-[var(--ink-soft)] mb-4 tracking-widest">
+            {character.title.toUpperCase()}
           </motion.p>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
-            className="text-lg italic" style={{ color: `${character.accentColor}cc` }}>
+            className="text-lg italic font-[var(--font-display)] text-[var(--ink-muted)]">
             &ldquo;{character.tagline}&rdquo;
           </motion.p>
         </motion.div>
 
         {/* Description */}
-        <motion.div variants={item} className="glass-strong rounded-2xl p-8 text-center">
-          <p className="text-white/70 leading-relaxed text-lg">{character.description}</p>
+        <motion.div variants={item} className="sketch-card rounded-none p-8 text-center">
+          <p className="leading-relaxed text-lg text-[var(--ink-soft)]">{character.description}</p>
         </motion.div>
 
         {/* Personality traits */}
         <motion.div variants={item}>
-          <h3 className="text-xl font-bold text-center mb-4 text-white/80">Your Core Traits</h3>
+          <div className="ink-divider mb-4">
+            <span className="font-[var(--font-mono)] text-sm font-bold tracking-widest">YOUR CORE TRAITS</span>
+          </div>
           <div className="flex flex-wrap justify-center gap-3">
             {character.personality.map((trait, i) => (
               <motion.span key={i} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 1 + i * 0.1 }}
-                className="px-4 py-2 rounded-xl border text-sm font-semibold"
-                style={{ borderColor: `${character.accentColor}40`, backgroundColor: `${character.accentColor}15`, color: character.accentColor }}>
+                className="sketch-card-thin px-4 py-2 font-[var(--font-mono)] text-sm font-semibold text-[var(--ink)]">
                 {trait}
               </motion.span>
             ))}
@@ -157,23 +164,27 @@ export function QuickCheckResults() {
 
         {/* Stats */}
         {result.bestStreak > 0 && (
-          <motion.div variants={item} className="glass rounded-2xl p-6 text-center">
+          <motion.div variants={item} className="sketch-card-thin rounded-none p-6 text-center">
             <div className="flex items-center justify-center gap-3 mb-2">
-              <Zap className="w-5 h-5 text-yellow-400" />
-              <span className="text-lg font-bold text-white/90">Best Streak: {result.bestStreak}x</span>
+              <Zap className="h-5 w-5 text-[var(--ink)]" />
+              <span className="font-[var(--font-mono)] text-lg font-bold text-[var(--ink)]">
+                BEST STREAK: {result.bestStreak}x
+              </span>
             </div>
-            <p className="text-sm text-white/50">You answered {result.bestStreak} questions in under 3 seconds straight!</p>
+            <p className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
+              You answered {result.bestStreak} questions in under 3 seconds straight!
+            </p>
           </motion.div>
         )}
 
         {/* Action Buttons */}
         <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 pb-8">
           <motion.button onClick={handleRestart}
-            className="px-8 py-4 rounded-xl font-bold text-white bg-gradient-to-r from-purple-500 to-pink-500 inline-flex items-center gap-2"
-            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            className="sketch-btn"
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             aria-label="Retake the quick aura check">
-            <RotateCcw className="w-5 h-5" />
-            Retake Check
+            <RotateCcw className="h-5 w-5" />
+            RETAKE CHECK
           </motion.button>
 
           <motion.button onClick={async () => {
@@ -181,11 +192,11 @@ export function QuickCheckResults() {
               try { if (navigator.share) await navigator.share(shareData); else { await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`); alert("Copied to clipboard!"); } }
               catch { try { await navigator.clipboard.writeText(window.location.href); alert("Link copied!"); } catch {} }
             }}
-            className="glass px-6 py-4 rounded-xl font-semibold text-white/70 hover:text-white inline-flex items-center gap-2 transition-colors"
-            whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            className="sketch-btn sketch-btn-outline"
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
             aria-label="Share your quick aura result">
-            <Share2 className="w-5 h-5" />
-            Share
+            <Share2 className="h-5 w-5" />
+            SHARE
           </motion.button>
         </motion.div>
       </motion.div>

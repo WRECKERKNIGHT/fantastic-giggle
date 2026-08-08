@@ -35,12 +35,14 @@ export class ErrorBoundary extends React.Component<
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="flex flex-col items-center justify-center p-8 rounded-2xl border border-red-500/30 bg-red-950/20 text-center">
-          <AlertTriangle className="w-12 h-12 text-red-400 mb-4" />
-          <h3 className="text-xl font-bold text-white/90 mb-2">
+        <div className="flex flex-col items-center justify-center p-8 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center border-2 border-[var(--ink)] bg-[var(--ink)]">
+            <AlertTriangle className="h-8 w-8 text-[var(--paper)]" />
+          </div>
+          <h3 className="mb-2 font-[var(--font-display)] text-2xl font-black uppercase text-[var(--ink)]">
             Something went wrong
           </h3>
-          <p className="text-sm text-white/50 mb-6 max-w-md">
+          <p className="mb-6 max-w-md text-sm text-[var(--ink-muted)]">
             A rendering error occurred. This is usually caused by a WebGL
             compatibility issue with the 3D scene.
           </p>
@@ -49,10 +51,10 @@ export class ErrorBoundary extends React.Component<
               this.setState({ hasError: false, error: null });
               window.location.reload();
             }}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold hover:shadow-[0_0_30px_rgba(249,115,22,0.5)] transition-shadow"
+            className="sketch-btn"
           >
-            <RefreshCcw className="w-4 h-4" />
-            Reload Page
+            <RefreshCcw className="h-4 w-4" />
+            RELOAD PAGE
           </button>
         </div>
       );
