@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, Bot, User, Send } from "lucide-react";
+import { MessageSquare, Bot, User } from "lucide-react";
 import { QuizQuestion } from "@/lib/questions-new";
 
 type ChatMessage = {
@@ -29,25 +29,25 @@ function TypingIndicator() {
       exit={{ opacity: 0, y: -10, scale: 0.9 }}
       className="flex items-start gap-3 mb-4"
     >
-      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
-        <Bot className="w-4 h-4 text-white" />
+      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center border-2 border-[var(--ink)] bg-[var(--ink)]">
+        <Bot className="h-4 w-4 text-[var(--paper)]" />
       </div>
-      <div className="bg-green-900/40 border border-green-500/20 rounded-2xl rounded-tl-sm px-4 py-3">
+      <div className="sketch-card-thin rounded-tl-sm px-4 py-3">
         <div className="flex items-center gap-1">
           <motion.div
             animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-            className="w-2 h-2 rounded-full bg-green-400"
+            className="h-2 w-2 rounded-full bg-[var(--ink)]"
           />
           <motion.div
             animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-            className="w-2 h-2 rounded-full bg-green-400"
+            className="h-2 w-2 rounded-full bg-[var(--ink)]"
           />
           <motion.div
             animate={{ scale: [1, 1.3, 1] }}
             transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-            className="w-2 h-2 rounded-full bg-green-400"
+            className="h-2 w-2 rounded-full bg-[var(--ink)]"
           />
         </div>
       </div>
@@ -56,7 +56,7 @@ function TypingIndicator() {
 }
 
 // Chat message bubble component
-function ChatBubble({ message }: { message: ChatMessage; isLatest: boolean }) {
+function ChatBubble({ message }: { message: ChatMessage }) {
   const isSystem = message.type === "system";
   const isUser = message.type === "user";
 
@@ -68,33 +68,35 @@ function ChatBubble({ message }: { message: ChatMessage; isLatest: boolean }) {
       className={`flex items-end gap-3 mb-4 ${isUser ? "flex-row-reverse" : ""}`}
     >
       {/* Avatar */}
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-        isSystem 
-          ? "bg-gradient-to-br from-green-500 to-emerald-600" 
-          : "bg-gradient-to-br from-white/20 to-white/10 border border-white/20"
-      }`}>
+      <div
+        className={`flex h-8 w-8 flex-shrink-0 items-center justify-center border-2 border-[var(--ink)] ${
+          isSystem ? "bg-[var(--ink)] text-[var(--paper)]" : "bg-[var(--paper-card)] text-[var(--ink)]"
+        }`}
+      >
         {isSystem ? (
-          <Bot className="w-4 h-4 text-white" />
+          <Bot className="h-4 w-4" />
         ) : (
-          <User className="w-4 h-4 text-white" />
+          <User className="h-4 w-4" />
         )}
       </div>
 
       {/* Bubble */}
-      <div className={`max-w-[80%] ${
-        isSystem
-          ? "bg-green-900/40 border border-green-500/20 rounded-2xl rounded-tl-sm"
-          : "bg-white/10 border border-white/20 rounded-2xl rounded-tr-sm"
-      }`}>
+      <div
+        className={`sketch-card-thin max-w-[80%] ${
+          isUser ? "rounded-tr-sm" : "rounded-tl-sm"
+        }`}
+      >
         {/* Sender label */}
-        <div className={`px-4 pt-2 text-xs font-bold ${
-          isSystem ? "text-green-400" : "text-white/60"
-        }`}>
+        <div
+          className={`px-4 pt-2 font-[var(--font-mono)] text-xs font-bold tracking-widest ${
+            isSystem ? "text-[var(--ink)]" : "text-[var(--ink-muted)]"
+          }`}
+        >
           {isSystem ? "SYSTEM" : "YOU"}
         </div>
-        
+
         {/* Message content */}
-        <div className="px-4 pb-3 text-white/90 text-sm leading-relaxed">
+        <div className="px-4 pb-3 text-sm leading-relaxed text-[var(--ink-soft)]">
           {message.text}
         </div>
       </div>
@@ -121,17 +123,17 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
 
     // Add typing delay based on question length
     const typingDuration = Math.min(1000 + question.text.length * 15, 2500);
-    
+
     typingTimeoutRef.current = setTimeout(() => {
       setIsTyping(false);
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: `system-${question.id}`,
           type: "system",
           text: question.text,
           timestamp: Date.now(),
-        }
+        },
       ]);
     }, typingDuration);
 
@@ -147,20 +149,20 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     }
   }, [messages, isTyping]);
 
   const handleOptionSelect = (optionId: string) => {
     if (selectedOption) return; // Prevent double-clicks
-    
+
     setSelectedOption(optionId);
-    const selectedOptionData = question.options.find(o => o.id === optionId);
-    
+    const selectedOptionData = question.options.find((o) => o.id === optionId);
+
     if (selectedOptionData) {
       // Add user message to chat
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           id: `user-${question.id}-${optionId}`,
@@ -168,9 +170,9 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
           text: selectedOptionData.text,
           timestamp: Date.now(),
           optionId,
-        }
+        },
       ]);
-      
+
       // Trigger the answer after a brief delay for the animation
       setTimeout(() => {
         onAnswer(question.id, optionId);
@@ -179,51 +181,49 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       {/* Chat Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-green-500/20 bg-green-900/20">
+      <div className="sketch-card-thin flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-            <MessageSquare className="w-5 h-5 text-white" />
+          <div className="flex h-10 w-10 items-center justify-center border-2 border-[var(--ink)] bg-[var(--ink)]">
+            <MessageSquare className="h-5 w-5 text-[var(--paper)]" />
           </div>
           <div>
-            <div className="text-sm font-bold text-green-400">AURA SYSTEM</div>
+            <div className="font-[var(--font-mono)] text-sm font-bold tracking-widest text-[var(--ink)]">
+              AURA SYSTEM
+            </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-xs text-green-400/70">online</span>
+              <div className="h-2 w-2 animate-pulse bg-[var(--ink)]" />
+              <span className="font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">ONLINE</span>
             </div>
           </div>
         </div>
-        <div className="text-xs text-white/40">
+        <div className="font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
           Q{questionNumber}/{totalQuestions}
         </div>
       </div>
 
       {/* Chat Messages Container */}
-      <div 
+      <div
         ref={chatContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-2"
-        style={{ maxHeight: "calc(100vh - 300px)" }}
+        className="sketch-card-thin flex-1 space-y-2 overflow-y-auto p-4"
+        style={{ maxHeight: "calc(100vh - 320px)" }}
       >
         {/* Welcome message (only show on first question) */}
-        {questionNumber === 1 && (
+        {questionNumber === 1 && messages.length === 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center text-xs text-white/30 py-2 mb-4"
+            className="mb-4 py-2 text-center font-[var(--font-mono)] text-xs text-[var(--ink-faint)]"
           >
-            Chat history is saved. Previous messages scroll up.
+            CHAT HISTORY IS SAVED. PREVIOUS MESSAGES SCROLL UP.
           </motion.div>
         )}
 
         {/* Previous messages */}
         <AnimatePresence>
-          {messages.map((msg, index) => (
-            <ChatBubble 
-              key={msg.id} 
-              message={msg} 
-              isLatest={index === messages.length - 1}
-            />
+          {messages.map((msg) => (
+            <ChatBubble key={msg.id} message={msg} />
           ))}
         </AnimatePresence>
 
@@ -234,8 +234,10 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
       </div>
 
       {/* Options as Chat Input Buttons */}
-      <div className="border-t border-green-500/20 bg-black/50 p-4">
-        <div className="text-xs text-green-400/70 mb-3 font-medium">Select your response:</div>
+      <div className="sketch-card-thin mt-2 p-4">
+        <div className="mb-3 font-[var(--font-mono)] text-xs font-bold text-[var(--ink-muted)]">
+          SELECT YOUR RESPONSE:
+        </div>
         <div className="grid grid-cols-1 gap-2">
           {question.options.map((option, index) => (
             <motion.button
@@ -247,32 +249,34 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
               whileTap={{ scale: 0.98 }}
               onClick={() => handleOptionSelect(option.id)}
               disabled={selectedOption !== null}
-              className={`w-full text-left p-3 rounded-xl border transition-all duration-300 group ${
+              className={`w-full p-3 text-left transition-all duration-300 group ${
                 selectedOption === option.id
-                  ? "border-green-500 bg-green-500/20 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                  ? "sketch-option sketch-option-selected"
                   : selectedOption !== null
-                    ? "border-white/5 bg-white/5 opacity-50"
-                    : "border-green-500/20 hover:border-green-500/40 hover:bg-green-900/30 hover:shadow-[0_0_10px_rgba(16,185,129,0.15)]"
+                    ? "sketch-option opacity-50"
+                    : "sketch-option"
               }`}
             >
               <div className="flex items-center gap-3">
-                <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm transition-all ${
-                  selectedOption === option.id 
-                    ? "bg-green-500 text-white" 
-                    : "bg-white/5 text-white/50 group-hover:bg-green-500/20 group-hover:text-green-400"
-                }`}>
-                  {String.fromCharCode(65 + index)}
+                <span className="sketch-letter">{String.fromCharCode(65 + index)}</span>
+                <span
+                  className={`text-sm ${
+                    selectedOption === option.id
+                      ? "text-[var(--paper)]"
+                      : "text-[var(--ink-soft)]"
+                  }`}
+                >
+                  {option.text}
                 </span>
-                <span className="text-sm text-white/90">{option.text}</span>
               </div>
             </motion.button>
           ))}
         </div>
-        
+
         {/* Phase warning */}
-        <div className="mt-4 flex items-center gap-2 text-xs text-green-400/50">
-          <Send className="w-3 h-3" />
-          <span>Response time affects your score. Answer naturally.</span>
+        <div className="mt-4 flex items-center gap-2 font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
+          <span className="inline-block h-2 w-2 bg-[var(--ink)]" />
+          <span>RESPONSE TIME AFFECTS YOUR SCORE. ANSWER NATURALLY.</span>
         </div>
       </div>
     </div>
