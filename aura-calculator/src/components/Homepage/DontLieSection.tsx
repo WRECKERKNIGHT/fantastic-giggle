@@ -5,21 +5,22 @@ import { AlertTriangle, Eye, Clock, Shield, Zap } from "lucide-react";
 
 export function DontLieSection() {
   return (
-    <section className="relative py-32 px-4 overflow-hidden">
-      {/* Red warning background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-[#1a0000] to-black" />
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTRWMjhIMjR2Mmgxem0tNC0ydi0yaC0ydjJoMnptMi00VjI0aC0ydjJoMnptNC00VjIwaC0ydjJoNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-50" />
+    <section className="relative overflow-hidden py-32 px-4 paper-grain">
+      {/* Inverted ink section */}
+      <div className="absolute inset-0 bg-[var(--ink)]" />
+      <div className="halftone absolute inset-0 opacity-[0.06] [background-image:radial-gradient(#f4f1ee_1px,transparent_1.5px)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,var(--ink),#2a251d,var(--ink))]" />
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
-        {/* Warning icon */}
+      <div className="relative z-10 mx-auto max-w-4xl text-center">
+        {/* Warning stamp */}
         <motion.div
-          initial={{ opacity: 0, scale: 0 }}
+          initial={{ opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           className="mb-8"
         >
-          <div className="w-24 h-24 rounded-full bg-red-500/20 border-2 border-red-500/50 flex items-center justify-center mx-auto">
-            <AlertTriangle className="w-12 h-12 text-red-500" />
+          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-[3px] border-[var(--paper)]">
+            <AlertTriangle className="h-12 w-12 text-[var(--paper)]" />
           </div>
         </motion.div>
 
@@ -28,10 +29,10 @@ export function DontLieSection() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-5xl md:text-7xl font-black mb-6"
+          className="mb-6 font-[var(--font-display)] text-5xl font-black uppercase text-[var(--paper)] sm:text-7xl"
         >
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
-            DON&apos;T LIE.
+          <span className="sketch-underline" style={{ backgroundImage: "linear-gradient(to right, #f4f1ee 60%, transparent 40%)" }}>
+            Don&apos;t lie.
           </span>
         </motion.h2>
 
@@ -40,45 +41,38 @@ export function DontLieSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.2 }}
-          className="text-2xl text-white/60 mb-12 max-w-2xl mx-auto"
+          className="mx-auto mb-12 max-w-2xl font-[var(--font-display)] text-2xl italic text-[var(--paper-deep)]"
         >
-          The system <span className="text-red-400 font-bold">knows</span> when you&apos;re faking it. Every. Single. Time.
+          The system <span className="font-bold not-italic text-[var(--paper)]">knows</span> when you&apos;re faking
+          it. Every. Single. Time.
         </motion.p>
 
         {/* Detection methods */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-2">
           {[
             {
-              icon: <Clock className="w-6 h-6" />,
-              title: "Response Time Tracking",
-              description: "Took 4 seconds to pick the 'confident' answer? Flagged. Authentic aura is instant.",
-              color: "text-yellow-400",
-              bg: "bg-yellow-500/10",
-              border: "border-yellow-500/30",
+              icon: <Clock className="h-6 w-6" />,
+              title: "RESPONSE TIME TRACKING",
+              description:
+                "Took 4 seconds to pick the 'confident' answer? Flagged. Authentic aura is instant.",
             },
             {
-              icon: <Eye className="w-6 h-6" />,
-              title: "Consistency Cross-Reference",
-              description: "Said you're fearless in Q7 but froze in Q42? The engine catches the contradiction.",
-              color: "text-purple-400",
-              bg: "bg-purple-500/10",
-              border: "border-purple-500/30",
+              icon: <Eye className="h-6 w-6" />,
+              title: "CONSISTENCY CROSS-REFERENCE",
+              description:
+                "Said you're fearless in Q7 but froze in Q42? The engine catches the contradiction.",
             },
             {
-              icon: <Shield className="w-6 h-6" />,
-              title: "Honeypot Trap Detection",
-              description: "Every 'cool' option is bait. The system tracks if you fell for the ego trap.",
-              color: "text-orange-400",
-              bg: "bg-orange-500/10",
-              border: "border-orange-500/30",
+              icon: <Shield className="h-6 w-6" />,
+              title: "HONEYPOT TRAP DETECTION",
+              description:
+                "Every 'cool' option is bait. The system tracks if you fell for the ego trap.",
             },
             {
-              icon: <Zap className="w-6 h-6" />,
-              title: "Instinct Velocity Analysis",
-              description: "Real confidence is measured in milliseconds. Overthinking = desperation.",
-              color: "text-cyan-400",
-              bg: "bg-cyan-500/10",
-              border: "border-cyan-500/30",
+              icon: <Zap className="h-6 w-6" />,
+              title: "INSTINCT VELOCITY ANALYSIS",
+              description:
+                "Real confidence is measured in milliseconds. Overthinking = desperation.",
             },
           ].map((method, index) => (
             <motion.div
@@ -87,13 +81,17 @@ export function DontLieSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className={`p-6 rounded-2xl border ${method.border} ${method.bg} text-left`}
+              className={`border-2 border-[var(--paper)]/70 p-6 text-left ${index % 2 === 0 ? "tilt-l" : "tilt-r"}`}
             >
-              <div className={`w-12 h-12 rounded-xl ${method.bg} flex items-center justify-center mb-4 ${method.color}`}>
+              <div className="mb-4 flex h-12 w-12 items-center justify-center border-2 border-[var(--paper)]/70 text-[var(--paper)]">
                 {method.icon}
               </div>
-              <h4 className="text-lg font-bold text-white/90 mb-2">{method.title}</h4>
-              <p className="text-sm text-white/50">{method.description}</p>
+              <h4 className="mb-2 font-[var(--font-mono)] text-sm font-bold tracking-wide text-[var(--paper)]">
+                {method.title}
+              </h4>
+              <p className="text-sm leading-relaxed text-[var(--paper-deep)]">
+                {method.description}
+              </p>
             </motion.div>
           ))}
         </div>
@@ -103,11 +101,11 @@ export function DontLieSection() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="inline-flex items-center gap-3 px-6 py-3 rounded-xl border border-red-500/30 bg-red-500/10"
+          className="inline-flex items-center gap-3 border-2 border-[var(--paper)]/70 px-6 py-3"
         >
-          <AlertTriangle className="w-5 h-5 text-red-400" />
-          <span className="text-red-400 font-bold">
-            Lying will only lower your score. Be honest. Be yourself. Let the aura flow.
+          <AlertTriangle className="h-5 w-5 text-[var(--paper)]" />
+          <span className="font-[var(--font-mono)] text-sm font-bold text-[var(--paper)]">
+            LYING WILL ONLY LOWER YOUR SCORE. BE HONEST. BE YOURSELF. LET THE AURA FLOW.
           </span>
         </motion.div>
       </div>

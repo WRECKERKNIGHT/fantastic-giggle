@@ -8,10 +8,70 @@ type AnimeCharacterProps = {
   className?: string;
 };
 
-// ===== NOOB - Loser with red aura =====
+const INK = "#14110c";
+const INK_SOFT = "#3d382f";
+const INK_MUTED = "#6f685c";
+const PAPER = "#fbfaf6";
+const PAPER_DEEP = "#ece8df";
+
+// ===== COMMON SKETCH FRAME =====
+function SketchFrame({
+  id,
+  label,
+  children,
+}: {
+  id: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <>
+      {/* Drawn circle frame */}
+      <circle cx="100" cy="100" r="88" fill={PAPER} stroke={INK} strokeWidth="2.5" />
+      <circle
+        cx="100"
+        cy="100"
+        r="82"
+        fill="none"
+        stroke={INK}
+        strokeWidth="1"
+        strokeDasharray="3 5"
+        opacity={0.5}
+      />
+      {/* Cross-hatch lower third */}
+      <path
+        d="M20,150 L180,150 M14,160 L186,160 M20,170 L180,170 M24,180 L176,180"
+        stroke={INK}
+        strokeWidth="1"
+        opacity={0.14}
+      />
+      {children}
+      {/* Corner ticks (sketched plate corners) */}
+      <path d="M24,30 L32,24 M176,30 L168,24 M24,170 L32,176 M176,170 L168,176" stroke={INK} strokeWidth="2" />
+      {/* Label plate */}
+      <g transform="rotate(-2 100 184)">
+        <rect x="55" y="174" width="90" height="18" fill={INK} rx="2" />
+        <text
+          x="100"
+          y="187"
+          textAnchor="middle"
+          fontSize="9"
+          fill={PAPER}
+          fontFamily="monospace"
+          fontWeight="bold"
+          letterSpacing="2"
+        >
+          {label}
+        </text>
+      </g>
+    </>
+  );
+}
+
+// ===== NOOB =====
 export function NoobCharacter({ size = 200, className = "" }: AnimeCharacterProps) {
   const id = useId().replace(/:/g, "-");
-  
+
   return (
     <motion.svg
       viewBox="0 0 200 200"
@@ -19,99 +79,53 @@ export function NoobCharacter({ size = 200, className = "" }: AnimeCharacterProp
       height={size}
       className={className}
       role="img"
-      aria-label="Noob character - a defeated figure with red aura"
-      initial={{ scale: 0.8, opacity: 0, rotate: -10 }}
+      aria-label="Noob character - a defeated ink sketch"
+      initial={{ scale: 0.8, opacity: 0, rotate: -8 }}
       animate={{ scale: 1, opacity: 1, rotate: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
     >
-      <defs>
-        <radialGradient id={`${id}-flame`} cx="50%" cy="100%" r="60%">
-          <stop offset="0%" stopColor="#ef4444" stopOpacity="0.8" />
-          <stop offset="50%" stopColor="#dc2626" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#991b1b" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id={`${id}-body`} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#4b5563" />
-          <stop offset="100%" stopColor="#1f2937" />
-        </linearGradient>
-      </defs>
-      
-      {/* Flame aura background */}
-      <ellipse cx="100" cy="180" rx="80" ry="60" fill={`url(#${id}-flame)`} />
-      
-      {/* Red flames rising */}
-      {[...Array(8)].map((_, i) => (
-        <motion.path
-          key={i}
-          d={`M${70 + i * 10},180 Q${75 + i * 10},${140 - (i * 3.7) % 20} ${80 + i * 10},${120 + (i * 4.3) % 30}`}
-          stroke="#ef4444"
-          strokeWidth="3"
+      <SketchFrame id={id} label="NOOB">
+        {/* Drooping shoulders */}
+        <path
+          d="M70,150 Q68,168 60,182 M130,150 Q132,168 140,182"
+          stroke={INK}
+          strokeWidth="7"
+          strokeLinecap="round"
           fill="none"
-          opacity={0.6}
-          animate={{ 
-            d: [
-              `M${70 + i * 10},180 Q${75 + i * 10},${140 - (i * 3.7) % 20} ${80 + i * 10},${120 + (i * 4.3) % 30}`,
-              `M${70 + i * 10},180 Q${75 + i * 10},${130 - Math.random() * 30} ${80 + i * 10},${110 + Math.random() * 30}`,
-              `M${70 + i * 10},180 Q${75 + i * 10},${140 - (i * 3.7) % 20} ${80 + i * 10},${120 + (i * 4.3) % 30}`,
-            ],
-            opacity: [0.4, 0.7, 0.4],
-          }}
-          transition={{ duration: 1.5 + (i * 0.3) % 1, repeat: Infinity }}
         />
-      ))}
-      
-      {/* Body - defeated posture */}
-      <path
-        d="M75,130 Q70,150 65,175 M125,130 Q130,150 135,175"
-        stroke="#374151"
-        strokeWidth="8"
-        strokeLinecap="round"
-        fill="none"
-      />
-      
-      {/* Head - drooping */}
-      <circle cx="100" cy="100" r="35" fill="#fcd5b8" stroke="#d4a574" strokeWidth="2" />
-      
-      {/* Sad eyes - anime style */}
-      <ellipse cx="88" cy="95" rx="6" ry="8" fill="white" />
-      <ellipse cx="112" cy="95" rx="6" ry="8" fill="white" />
-      <ellipse cx="88" cy="97" rx="4" ry="5" fill="#6b7280" />
-      <ellipse cx="112" cy="97" rx="4" ry="5" fill="#6b7280" />
-      {/* Tear drops */}
-      <motion.ellipse
-        cx="85"
-        cy="108"
-        rx="2"
-        ry="4"
-        fill="#60a5fa"
-        opacity={0.8}
-        animate={{ cy: [108, 118, 108], opacity: [0.8, 0, 0.8] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      />
-      
-      {/* Sad mouth */}
-      <path d="M90,115 Q100,110 110,115" stroke="#374151" strokeWidth="2" fill="none" />
-      
-      {/* X marks on forehead (loser marks) */}
-      <g stroke="#ef4444" strokeWidth="2">
-        <line x1="95" y1="78" x2="105" y2="88" />
-        <line x1="105" y1="78" x2="95" y2="88" />
-      </g>
-      
-      {/* Speech bubble */}
-      <g>
-        <ellipse cx="150" cy="60" rx="30" ry="20" fill="white" opacity={0.9} />
-        <polygon points="135,75 140,65 130,70" fill="white" opacity={0.9} />
-        <text x="150" y="65" textAnchor="middle" fontSize="10" fill="#374151" fontWeight="bold">LOST...</text>
-      </g>
+        {/* Head */}
+        <circle cx="100" cy="100" r="34" fill={PAPER_DEEP} stroke={INK} strokeWidth="2.5" />
+        {/* Sad eyes with X marks */}
+        <g stroke={INK} strokeWidth="2.5" strokeLinecap="round">
+          <line x1="83" y1="92" x2="93" y2="100" />
+          <line x1="93" y1="92" x2="83" y2="100" />
+          <line x1="107" y1="92" x2="117" y2="100" />
+          <line x1="117" y1="92" x2="107" y2="100" />
+        </g>
+        {/* Tear drop */}
+        <motion.path
+          d="M87,106 q3,7 0,11 q-3,-4 0,-11z"
+          fill={INK}
+          animate={{ y: [0, 6, 0], opacity: [1, 0.2, 1] }}
+          transition={{ duration: 2.2, repeat: Infinity }}
+        />
+        {/* Frown */}
+        <path d="M90,118 Q100,112 110,118" stroke={INK} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        {/* Sweat beads */}
+        <path d="M120,80 q3,5 0,9" stroke={INK} strokeWidth="1.5" fill="none" />
+        {/* "L" branded on forehead */}
+        <text x="100" y="82" textAnchor="middle" fontSize="14" fill={INK} fontWeight="bold" fontFamily="monospace">
+          L
+        </text>
+      </SketchFrame>
     </motion.svg>
   );
 }
 
-// ===== CLOWN - Pink chaos with sparkles =====
+// ===== CLOWN =====
 export function ClownCharacter({ size = 200, className = "" }: AnimeCharacterProps) {
   const id = useId().replace(/:/g, "-");
-  
+
   return (
     <motion.svg
       viewBox="0 0 200 200"
@@ -119,96 +133,80 @@ export function ClownCharacter({ size = 200, className = "" }: AnimeCharacterPro
       height={size}
       className={className}
       role="img"
-      aria-label="Clown character - a chaotic figure with pink aura"
-      initial={{ scale: 0.8, opacity: 0, rotate: 15 }}
+      aria-label="Clown character - a chaotic ink sketch"
+      initial={{ scale: 0.8, opacity: 0, rotate: 10 }}
       animate={{ scale: 1, opacity: 1, rotate: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
     >
-      <defs>
-        <radialGradient id={`${id}-aura`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#ec4899" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#9d174d" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      
-      {/* Pink aura glow */}
-      <circle cx="100" cy="100" r="90" fill={`url(#${id}-aura)`} />
-      
-      {/* Confetti particles */}
-      {[...Array(12)].map((_, i) => (
-        <motion.rect
-          key={i}
-          x={40 + (i * 17) % 120}
-          y={30 + (i * 23) % 140}
-          width="4"
-          height="8"
-          fill={["#ec4899", "#f472b6", "#fbbf24", "#06b6d4", "#a855f7"][i % 5]}
-          rx="1"
-          animate={{
-            rotate: [0, 360],
-            y: [0, 20, 0],
-          }}
-          transition={{ duration: 2 + Math.random() * 2, repeat: Infinity, delay: Math.random() }}
+      <SketchFrame id={id} label="CLOWN">
+        {/* Zigzag body */}
+        <path
+          d="M70,150 L85,140 L80,150 L95,140 L90,150 L105,140 L100,150 L115,140 L110,150 L130,150"
+          stroke={INK}
+          strokeWidth="2.5"
+          fill="none"
         />
-      ))}
-      
-      {/* Body - juggling pose */}
-      <ellipse cx="100" cy="145" rx="30" ry="40" fill="#ec4899" />
-      
-      {/* Head */}
-      <circle cx="100" cy="80" r="40" fill="#fcd5b8" stroke="#d4a574" strokeWidth="2" />
-      
-      {/* Clown nose */}
-      <circle cx="100" cy="85" r="8" fill="#ef4444" />
-      
-      {/* Crazy eyes - different sizes */}
-      <ellipse cx="85" cy="75" rx="10" ry="12" fill="white" />
-      <ellipse cx="115" cy="75" rx="8" ry="10" fill="white" />
-      <circle cx="87" cy="76" r="5" fill="#1f2937" />
-      <circle cx="117" cy="76" r="4" fill="#1f2937" />
-      {/* Star sparkles in eyes */}
-      <motion.circle
-        cx="85"
-        cy="73"
-        r="2"
-        fill="#fbbf24"
-        animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-        transition={{ duration: 1, repeat: Infinity }}
-      />
-      
-      {/* Big grin */}
-      <path d="M78,95 Q100,115 122,95" stroke="#374151" strokeWidth="3" fill="none" />
-      
-      {/* Rainbow hair spikes */}
-      <polygon points="70,60 60,20 80,50" fill="#ef4444" />
-      <polygon points="85,55 80,10 95,45" fill="#f59e0b" />
-      <polygon points="100,52 100,5 115,45" fill="#22c55e" />
-      <polygon points="115,55 120,10 105,45" fill="#3b82f6" />
-      <polygon points="130,60 140,20 120,50" fill="#a855f7" />
-      
-      {/* Juggling balls */}
-      {[0, 1, 2].map((i) => (
-        <motion.circle
-          key={i}
-          cx={60 + i * 40}
-          cy={30}
-          r="8"
-          fill={["#ec4899", "#fbbf24", "#06b6d4"][i]}
-          animate={{
-            cy: [30, 15, 30],
-            cx: [60 + i * 40, 70 + i * 30, 60 + i * 40],
-          }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+        {/* Head */}
+        <circle cx="100" cy="96" r="36" fill={PAPER_DEEP} stroke={INK} strokeWidth="2.5" />
+        {/* Jester hat */}
+        <motion.g
+          animate={{ rotate: [-6, 6, -6] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          style={{ transformOrigin: "100px 100px" }}
+        >
+          <path d="M64,84 L100,34 L136,84" stroke={INK} strokeWidth="2.5" fill="none" />
+          <path d="M100,34 L100,50 M100,50 L112,42 M100,50 L88,42" stroke={INK} strokeWidth="2" fill="none" />
+          <circle cx="100" cy="30" r="5" fill={INK} />
+        </motion.g>
+        {/* Mismatched eyes */}
+        <circle cx="86" cy="92" r="7" fill="none" stroke={INK} strokeWidth="2.5" />
+        <circle cx="114" cy="92" r="4" fill={INK} />
+        {/* Spiral eye */}
+        <motion.path
+          d="M86,92 m0,0 q5,-2 4,2 q0,3 -4,2 q-4,-1 -3,-5 q2,-4 6,-2"
+          stroke={INK}
+          strokeWidth="1.5"
+          fill="none"
+          animate={{ rotate: 360 }}
+          transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+          style={{ transformOrigin: "86px 92px" }}
         />
-      ))}
+        {/* Clown nose */}
+        <circle cx="100" cy="102" r="7" fill={INK} />
+        {/* Big grin */}
+        <path d="M84,114 Q100,132 116,114" stroke={INK} strokeWidth="2.5" fill="none" />
+        {/* Star sparkles */}
+        <motion.text
+          x="58"
+          y="70"
+          fontSize="12"
+          fill={INK}
+          animate={{ opacity: [0.3, 1, 0.3], rotate: [0, 45, 0] }}
+          transition={{ duration: 1.6, repeat: Infinity }}
+          style={{ transformOrigin: "58px 70px" }}
+        >
+          ✦
+        </motion.text>
+        <motion.text
+          x="146"
+          y="80"
+          fontSize="9"
+          fill={INK}
+          animate={{ opacity: [1, 0.2, 1], rotate: [45, 0, 45] }}
+          transition={{ duration: 1.9, repeat: Infinity }}
+          style={{ transformOrigin: "146px 80px" }}
+        >
+          ✦
+        </motion.text>
+      </SketchFrame>
     </motion.svg>
   );
 }
 
-// ===== AURA FARMER - Amber/gold farmer with wheat =====
+// ===== AURA FARMER =====
 export function AuraFarmerCharacter({ size = 200, className = "" }: AnimeCharacterProps) {
   const id = useId().replace(/:/g, "-");
-  
+
   return (
     <motion.svg
       viewBox="0 0 200 200"
@@ -216,103 +214,74 @@ export function AuraFarmerCharacter({ size = 200, className = "" }: AnimeCharact
       height={size}
       className={className}
       role="img"
-      aria-label="Aura Farmer character - a determined figure with golden aura"
-      initial={{ scale: 0.8, opacity: 0, y: 20 }}
+      aria-label="Aura Farmer character - a determined ink sketch"
+      initial={{ scale: 0.8, opacity: 0, y: 16 }}
       animate={{ scale: 1, opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
     >
-      <defs>
-        <radialGradient id={`${id}-aura`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.5" />
-          <stop offset="100%" stopColor="#92400e" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id={`${id}-flame`} x1="0%" y1="100%" x2="0%" y2="0%">
-          <stop offset="0%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#fbbf24" stopOpacity="0.3" />
-        </linearGradient>
-      </defs>
-      
-      {/* Golden aura */}
-      <circle cx="100" cy="100" r="85" fill={`url(#${id}-aura)`} />
-      
-      {/* Wheat stalks */}
-      {[...Array(6)].map((_, i) => (
+      <SketchFrame id={id} label="AURA FARMER">
+        {/* Wheat stalks */}
+        {[...Array(4)].map((_, i) => (
+          <motion.g
+            key={i}
+            animate={{ rotate: [-4, 4, -4] }}
+            transition={{ duration: 2.6, repeat: Infinity, delay: i * 0.15 }}
+            style={{ transformOrigin: `${58 + i * 28}px 168px` }}
+          >
+            <path
+              d={`M${58 + i * 28},168 L${58 + i * 28},138`}
+              stroke={INK}
+              strokeWidth="2"
+            />
+            <path
+              d={`M${58 + i * 28},140 L${50 + i * 28},132 M${58 + i * 28},132 L${66 + i * 28},124`}
+              stroke={INK}
+              strokeWidth="1.5"
+              fill="none"
+            />
+            <circle cx={`${58 + i * 28}`} cy="140" r="3.5" fill={INK} />
+          </motion.g>
+        ))}
+        {/* Body / overalls */}
+        <rect x="82" y="120" width="36" height="46" fill="none" stroke={INK} strokeWidth="2.5" />
+        <line x1="100" y1="120" x2="100" y2="166" stroke={INK} strokeWidth="2" />
+        {/* Head */}
+        <circle cx="100" cy="92" r="32" fill={PAPER_DEEP} stroke={INK} strokeWidth="2.5" />
+        {/* Straw hat */}
+        <ellipse cx="100" cy="70" rx="44" ry="9" fill="none" stroke={INK} strokeWidth="2.5" />
+        <path d="M66,70 Q100,38 134,70" fill="none" stroke={INK} strokeWidth="2.5" />
+        <line x1="100" y1="42" x2="100" y2="64" stroke={INK} strokeWidth="1.5" />
+        {/* Determined eyes */}
+        <circle cx="89" cy="90" r="4.5" fill={INK} />
+        <circle cx="111" cy="90" r="4.5" fill={INK} />
+        <line x1="81" y1="80" x2="94" y2="83" stroke={INK} strokeWidth="2.5" />
+        <line x1="119" y1="80" x2="106" y2="83" stroke={INK} strokeWidth="2.5" />
+        {/* Gritting smile */}
+        <path d="M90,106 Q100,112 110,106" stroke={INK} strokeWidth="2.5" fill="none" />
+        {/* Rising coins */}
         <motion.g
-          key={i}
-          animate={{ rotate: [-5, 5, -5] }}
-          transition={{ duration: 3, repeat: Infinity, delay: i * 0.2 }}
-          style={{ transformOrigin: `${30 + i * 28}px 180px` }}
+          animate={{ y: [-6, -16, -6], opacity: [0, 1, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, delay: 0.3 }}
         >
-          <line
-            x1={30 + i * 28}
-            y1={180}
-            x2={30 + i * 28}
-            y2={120}
-            stroke="#92400e"
-            strokeWidth="3"
-          />
-          <ellipse
-            cx={30 + i * 28}
-            cy={115}
-            rx="6"
-            ry="12"
-            fill="#f59e0b"
-          />
+          <circle cx="58" cy="96" r="6" fill="none" stroke={INK} strokeWidth="2" />
+          <text x="58" y="99" textAnchor="middle" fontSize="7" fill={INK} fontWeight="bold">+</text>
         </motion.g>
-      ))}
-      
-      {/* Body - farmer posture */}
-      <rect x="80" y="110" width="40" height="50" rx="5" fill="#92400e" />
-      
-      {/* Head with hat */}
-      <circle cx="100" cy="85" r="35" fill="#fcd5b8" stroke="#d4a574" strokeWidth="2" />
-      
-      {/* Straw hat */}
-      <ellipse cx="100" cy="60" rx="45" ry="10" fill="#d97706" />
-      <path d="M60,60 Q100,30 140,60" fill="#f59e0b" />
-      
-      {/* Determined eyes */}
-      <ellipse cx="88" cy="82" rx="5" ry="6" fill="white" />
-      <ellipse cx="112" cy="82" rx="5" ry="6" fill="white" />
-      <circle cx="89" cy="83" r="3" fill="#92400e" />
-      <circle cx="113" cy="83" r="3" fill="#92400e" />
-      {/* Determined eyebrows */}
-      <line x1="82" y1="72" x2="95" y2="75" stroke="#374151" strokeWidth="2" />
-      <line x1="118" y1="72" x2="105" y2="75" stroke="#374151" strokeWidth="2" />
-      
-      {/* Smirk */}
-      <path d="M90,98 Q100,105 115,100" stroke="#374151" strokeWidth="2" fill="none" />
-      
-      {/* Gold coins floating */}
-      {[...Array(4)].map((_, i) => (
-        <motion.circle
-          key={i}
-          cx={50 + i * 35}
-          cy={50}
-          r="8"
-          fill="#fbbf24"
-          stroke="#92400e"
-          strokeWidth="1"
-          animate={{
-            cy: [50, 40, 50],
-            opacity: [0.8, 1, 0.8],
-          }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
-        />
-      ))}
-      
-      {/* "FARMING" text */}
-      <text x="100" y="195" textAnchor="middle" fontSize="12" fill="#f59e0b" fontWeight="bold">
-        FARMING AURA...
-      </text>
+        <motion.g
+          animate={{ y: [-6, -16, -6], opacity: [0, 1, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, delay: 1 }}
+        >
+          <circle cx="146" cy="102" r="6" fill="none" stroke={INK} strokeWidth="2" />
+          <text x="146" y="105" textAnchor="middle" fontSize="7" fill={INK} fontWeight="bold">+</text>
+        </motion.g>
+      </SketchFrame>
     </motion.svg>
   );
 }
 
-// ===== GIGA CHAD - Purple/indigo powerful figure =====
+// ===== GIGA CHAD =====
 export function GigaChadCharacter({ size = 200, className = "" }: AnimeCharacterProps) {
   const id = useId().replace(/:/g, "-");
-  
+
   return (
     <motion.svg
       viewBox="0 0 200 200"
@@ -320,118 +289,64 @@ export function GigaChadCharacter({ size = 200, className = "" }: AnimeCharacter
       height={size}
       className={className}
       role="img"
-      aria-label="Giga Chad character - a powerful figure with purple aura"
+      aria-label="Giga Chad character - a powerful ink sketch"
       initial={{ scale: 0.8, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 200, damping: 15 }}
     >
-      <defs>
-        <radialGradient id={`${id}-aura`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#a855f7" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#581c87" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id={`${id}-body`} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#4c1d95" />
-        </linearGradient>
-      </defs>
-      
-      {/* Purple aura burst */}
-      <circle cx="100" cy="100" r="90" fill={`url(#${id}-aura)`} />
-      
-      {/* Energy lines */}
-      {[...Array(12)].map((_, i) => {
-        const angle = (i / 12) * Math.PI * 2;
-        const x1 = 100 + Math.cos(angle) * 50;
-        const y1 = 100 + Math.sin(angle) * 50;
-        const x2 = 100 + Math.cos(angle) * 80;
-        const y2 = 100 + Math.sin(angle) * 80;
-        return (
-          <motion.line
-            key={i}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke="#a855f7"
-            strokeWidth="2"
-            opacity={0.5}
-            animate={{ opacity: [0.3, 0.7, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.1 }}
-          />
-        );
-      })}
-      
-      {/* Muscular body */}
-      <path
-        d="M70,115 Q65,130 68,160 L132,160 Q135,130 130,115"
-        fill={`url(#${id}-body)`}
-      />
-      
-      {/* Broad shoulders */}
-      <path
-        d="M60,110 Q70,105 80,115 M140,110 Q130,105 120,115"
-        stroke="#7c3aed"
-        strokeWidth="8"
-        strokeLinecap="round"
-        fill="none"
-      />
-      
-      {/* Head - chiseled */}
-      <circle cx="100" cy="80" r="35" fill="#fcd5b8" stroke="#d4a574" strokeWidth="2" />
-      
-      {/* Jawline emphasis */}
-      <path
-        d="M75,85 L85,105 L115,105 L125,85"
-        stroke="#d4a574"
-        strokeWidth="2"
-        fill="none"
-      />
-      
-      {/* Confident eyes */}
-      <ellipse cx="88" cy="78" rx="5" ry="4" fill="white" />
-      <ellipse cx="112" cy="78" rx="5" ry="4" fill="white" />
-      <circle cx="89" cy="78" r="3" fill="#1f2937" />
-      <circle cx="113" cy="78" r="3" fill="#1f2937" />
-      
-      {/* Thick eyebrows */}
-      <line x1="82" y1="70" x2="95" y2="72" stroke="#374151" strokeWidth="3" />
-      <line x1="118" y1="70" x2="105" y2="72" stroke="#374151" strokeWidth="3" />
-      
-      {/* Smirk */}
-      <path d="M92,92 Q100,98 112,92" stroke="#374151" strokeWidth="2" fill="none" />
-      
-      {/* Sunglasses */}
-      <rect x="78" y="73" width="18" height="10" rx="3" fill="#1f2937" opacity={0.9} />
-      <rect x="104" y="73" width="18" height="10" rx="3" fill="#1f2937" opacity={0.9} />
-      <line x1="96" y1="78" x2="104" y2="78" stroke="#1f2937" strokeWidth="2" />
-      
-      {/* Lightning bolts */}
-      <motion.polygon
-        points="160,60 165,75 155,72 165,90"
-        fill="#fbbf24"
-        animate={{ opacity: [0.6, 1, 0.6], scale: [0.9, 1.1, 0.9] }}
-        transition={{ duration: 1, repeat: Infinity }}
-      />
-      <motion.polygon
-        points="40,50 45,65 35,62 45,80"
-        fill="#fbbf24"
-        animate={{ opacity: [0.6, 1, 0.6], scale: [0.9, 1.1, 0.9] }}
-        transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
-      />
-      
-      {/* "CHAD" text */}
-      <text x="100" y="195" textAnchor="middle" fontSize="14" fill="#a855f7" fontWeight="bold">
-        ABSOLUTE CHAD
-      </text>
+      <SketchFrame id={id} label="GIGA CHAD">
+        {/* Radiating energy ticks */}
+        {[...Array(16)].map((_, i) => {
+          const angle = (i / 16) * Math.PI * 2;
+          const x1 = 100 + Math.cos(angle) * 46;
+          const y1 = 100 + Math.sin(angle) * 46;
+          const x2 = 100 + Math.cos(angle) * 58;
+          const y2 = 100 + Math.sin(angle) * 58;
+          return (
+            <line
+              key={i}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke={INK}
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity={0.8}
+            />
+          );
+        })}
+        {/* Broad shoulders */}
+        <path
+          d="M62,160 Q60,138 74,128 M138,160 Q140,138 126,128"
+          stroke={INK}
+          strokeWidth="9"
+          strokeLinecap="round"
+          fill="none"
+        />
+        {/* Trapezius block */}
+        <path d="M62,160 L84,126 L116,126 L138,160" fill="none" stroke={INK} strokeWidth="2.5" />
+        {/* Head - chiseled */}
+        <circle cx="100" cy="86" r="33" fill={PAPER_DEEP} stroke={INK} strokeWidth="2.5" />
+        {/* Jawline */}
+        <path d="M76,92 L84,114 L116,114 L124,92" fill="none" stroke={INK} strokeWidth="2.5" />
+        {/* Sunglasses */}
+        <rect x="78" y="78" width="19" height="11" rx="3" fill={INK} />
+        <rect x="103" y="78" width="19" height="11" rx="3" fill={INK} />
+        <line x1="97" y1="83" x2="103" y2="83" stroke={INK} strokeWidth="2" />
+        {/* Smirk */}
+        <path d="M92,102 Q100,108 112,100" stroke={INK} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        {/* Chin tick */}
+        <path d="M95,119 L105,119" stroke={INK} strokeWidth="1.5" opacity={0.6} />
+      </SketchFrame>
     </motion.svg>
   );
 }
 
-// ===== ULTIMATE BEAST - Cyan/white cosmic power =====
+// ===== ULTIMATE BEAST =====
 export function UltimateBeastCharacter({ size = 200, className = "" }: AnimeCharacterProps) {
   const id = useId().replace(/:/g, "-");
-  
+
   return (
     <motion.svg
       viewBox="0 0 200 200"
@@ -439,137 +354,76 @@ export function UltimateBeastCharacter({ size = 200, className = "" }: AnimeChar
       height={size}
       className={className}
       role="img"
-      aria-label="Ultimate Beast character - a transcendent figure with cosmic power"
+      aria-label="Ultimate Beast character - a transcendent ink sketch"
       initial={{ scale: 0.5, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 150, damping: 12 }}
     >
-      <defs>
-        <radialGradient id={`${id}-aura`} cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#00ffff" stopOpacity="0.7" />
-          <stop offset="50%" stopColor="#0891b2" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#164e63" stopOpacity="0" />
-        </radialGradient>
-        <linearGradient id={`${id}-body`} x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#22d3ee" />
-          <stop offset="100%" stopColor="#0e7490" />
-        </linearGradient>
-        <filter id={`${id}-glow`}>
-          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      
-      {/* Cosmic aura */}
-      <circle cx="100" cy="100" r="95" fill={`url(#${id}-aura)`} />
-      
-      {/* Rotating rings */}
-      {[0, 1, 2].map((i) => (
-        <motion.ellipse
-          key={i}
-          cx="100"
-          cy="100"
-          rx={60 + i * 15}
-          ry={20 + i * 5}
-          fill="none"
-          stroke="#00ffff"
-          strokeWidth="1"
-          opacity={0.4 - i * 0.1}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 10 + i * 5, repeat: Infinity, ease: "linear" }}
-          style={{ transformOrigin: "100px 100px" }}
-        />
-      ))}
-      
-      {/* Stars */}
-      {[...Array(20)].map((_, i) => (
-        <motion.circle
-          key={i}
-          cx={20 + (i * 11) % 160}
-          cy={20 + (i * 13) % 160}
-          r={1 + (i * 0.7) % 2}
-          fill="white"
-          animate={{
-            opacity: [0.3, 1, 0.3],
-            scale: [0.8, 1.2, 0.8],
-          }}
-          transition={{
-            duration: 1 + Math.random() * 2,
-            repeat: Infinity,
-            delay: Math.random() * 2,
-          }}
-        />
-      ))}
-      
-      {/* Cosmic body - floating */}
-      <motion.g
-        animate={{ y: [-5, 5, -5] }}
-        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-      >
-        {/* Robe/body */}
-        <path
-          d="M70,110 Q60,130 65,170 L135,170 Q140,130 130,110"
-          fill={`url(#${id}-body)`}
-          filter={`url(#${id}-glow)`}
-        />
-        
-        {/* Head */}
-        <circle cx="100" cy="80" r="35" fill="#e0f2fe" stroke="#22d3ee" strokeWidth="2" />
-        
-        {/* Glowing eyes */}
-        <motion.ellipse
-          cx="88"
-          cy="78"
-          rx="6"
-          ry="5"
-          fill="#00ffff"
-          animate={{ 
-            opacity: [0.8, 1, 0.8],
-            filter: ["drop-shadow(0 0 5px #00ffff)", "drop-shadow(0 0 15px #00ffff)", "drop-shadow(0 0 5px #00ffff)"]
-          }}
+      <SketchFrame id={id} label="ULTIMATE BEAST">
+        {/* Halftone burst */}
+        {[...Array(4)].map((_, i) => (
+          <circle
+            key={i}
+            cx="100"
+            cy="100"
+            r={56 + i * 7}
+            fill="none"
+            stroke={INK}
+            strokeWidth="1"
+            strokeDasharray="2 8"
+            opacity={0.35 - i * 0.07}
+          />
+        ))}
+        {/* Rising robe */}
+        <motion.g
+          animate={{ y: [-4, 4, -4] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <path
+            d="M72,150 Q62,120 78,112 L122,112 Q138,120 128,150 Z"
+            fill="none"
+            stroke={INK}
+            strokeWidth="2.5"
+          />
+          {/* Head */}
+          <circle cx="100" cy="84" r="32" fill={PAPER_DEEP} stroke={INK} strokeWidth="2.5" />
+          {/* Crown */}
+          <path d="M72,64 L76,46 L88,60 L100,42 L112,60 L124,46 L128,64" fill={INK} />
+          <circle cx="76" cy="44" r="2.5" fill={INK} />
+          <circle cx="100" cy="40" r="2.5" fill={INK} />
+          <circle cx="124" cy="44" r="2.5" fill={INK} />
+          {/* Star eyes */}
+          <g stroke={INK} strokeWidth="2" strokeLinecap="round">
+            <path d="M89,82 l2.5,6 l6,2.5 l-6,2.5 l-2.5,6 l-2.5,-6 l-6,-2.5 l6,-2.5 Z" fill={INK} />
+            <path d="M111,82 l2.5,6 l6,2.5 l-6,2.5 l-2.5,6 l-2.5,-6 l-6,-2.5 l6,-2.5 Z" fill={INK} />
+          </g>
+          {/* Calm smile */}
+          <path d="M92,98 Q100,103 108,98" stroke={INK} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+        </motion.g>
+        {/* Sparkle accents */}
+        <motion.text
+          x="148"
+          y="66"
+          fontSize="10"
+          fill={INK}
+          animate={{ opacity: [1, 0.2, 1], rotate: [0, 90, 0] }}
+          transition={{ duration: 2.4, repeat: Infinity }}
+          style={{ transformOrigin: "148px 66px" }}
+        >
+          ✦
+        </motion.text>
+        <motion.text
+          x="52"
+          y="52"
+          fontSize="7"
+          fill={INK}
+          animate={{ opacity: [0.2, 1, 0.2], rotate: [90, 0, 90] }}
           transition={{ duration: 2, repeat: Infinity }}
-        />
-        <motion.ellipse
-          cx="112"
-          cy="78"
-          rx="6"
-          ry="5"
-          fill="#00ffff"
-          animate={{ 
-            opacity: [0.8, 1, 0.8],
-            filter: ["drop-shadow(0 0 5px #00ffff)", "drop-shadow(0 0 15px #00ffff)", "drop-shadow(0 0 5px #00ffff)"]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        
-        {/* Cosmic crown */}
-        {[...Array(5)].map((_, i) => {
-          const angle = ((i - 2) / 4) * Math.PI * 0.6 - Math.PI / 2;
-          return (
-            <motion.polygon
-              key={i}
-              points={`${100 + Math.cos(angle) * 30},${55 + Math.sin(angle) * 15} ${100 + Math.cos(angle) * 25 - 5},${45 + Math.sin(angle) * 20} ${100 + Math.cos(angle) * 25 + 5},${45 + Math.sin(angle) * 20}`}
-              fill="#00ffff"
-              animate={{
-                opacity: [0.6, 1, 0.6],
-                scale: [0.9, 1.1, 0.9],
-              }}
-              transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
-            />
-          );
-        })}
-        
-        {/* Serene smile */}
-        <path d="M90,92 Q100,98 110,92" stroke="#0e7490" strokeWidth="2" fill="none" />
-      </motion.g>
-      
-      {/* Aura text */}
-      <text x="100" y="195" textAnchor="middle" fontSize="12" fill="#00ffff" fontWeight="bold" filter={`url(#${id}-glow)`}>
-        TRANSCENDENCE
-      </text>
+          style={{ transformOrigin: "52px 52px" }}
+        >
+          ✦
+        </motion.text>
+      </SketchFrame>
     </motion.svg>
   );
 }

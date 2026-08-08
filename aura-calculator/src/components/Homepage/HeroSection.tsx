@@ -1,361 +1,200 @@
-/* eslint-disable react-hooks/purity -- particle effects use Math.random() for visual variety */
 "use client";
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame, Zap, Skull, Eye, Sparkles, Swords } from "lucide-react";
+import { Swords, Zap, Eye, Flame, Skull } from "lucide-react";
 
-const ANIME_QUOTES = [
-  "The power of aura flows through you...",
-  "Your spirit has been measured...",
-  "The cosmic forces await...",
-  "Only the strongest survive...",
-  "Your true power shall be revealed...",
+const QUOTES = [
+  "Presence cannot be faked. Only measured.",
+  "The system watches how fast you blink.",
+  "No colour. No comfort. Pure psychometrics.",
+  "Your hesitation is a data point.",
+  "The tier is a verdict, not a label.",
 ];
 
-export function HeroSection({ onStart, onQuickCheck }: { onStart: () => void; onQuickCheck: () => void }) {
-  const [windowHeight, setWindowHeight] = useState(1000);
+const STATS = [
+  { icon: <Eye className="w-5 h-5" />, label: "50 QUESTIONS" },
+  { icon: <Zap className="w-5 h-5" />, label: "LIE DETECTION" },
+  { icon: <Flame className="w-5 h-5" />, label: "5 PRESSURE PHASES" },
+  { icon: <Skull className="w-5 h-5" />, label: "5 TIERS" },
+];
+
+export function HeroSection({
+  onStart,
+  onQuickCheck,
+}: {
+  onStart: () => void;
+  onQuickCheck: () => void;
+}) {
   const [quoteIndex, setQuoteIndex] = useState(0);
 
   useEffect(() => {
-    setWindowHeight(window.innerHeight);
     const interval = setInterval(() => {
-      setQuoteIndex((prev) => (prev + 1) % ANIME_QUOTES.length);
+      setQuoteIndex((prev) => (prev + 1) % QUOTES.length);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Anime-style animated background */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#1a0a0a] to-black" />
-        
-        {/* Radial energy burst */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] opacity-20"
-          style={{
-            background: "conic-gradient(from 0deg, transparent 0%, rgba(255,100,0,0.3) 10%, transparent 20%, rgba(255,50,0,0.2) 30%, transparent 40%)",
-            animation: "spin 20s linear infinite",
-          }}
-        />
-        
-        {/* Floating energy particles */}
-        {Array.from({ length: 50 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              bottom: `-10%`,
-              width: `${2 + Math.random() * 4}px`,
-              height: `${2 + Math.random() * 4}px`,
-              backgroundColor: ["#ff4500", "#ff6b00", "#ffaa00", "#ff0066", "#00ffff"][i % 5],
-            }}
-            animate={{
-              y: [0, -windowHeight * 1.3],
-              opacity: [0, 1, 0.8, 0],
-              scale: [0.5, 2, 0.5],
-            }}
-            transition={{
-              duration: 2.5 + Math.random() * 3,
-              repeat: Infinity,
-              delay: Math.random() * 4,
-              ease: "easeOut",
-            }}
-          />
-        ))}
-        
-        {/* Anime speed lines */}
-        <div className="absolute inset-0 overflow-hidden opacity-10">
-          {[...Array(15)].map((_, i) => (
-            <motion.div
-              key={`line-${i}`}
-              className="absolute h-px bg-gradient-to-r from-transparent via-orange-500 to-transparent"
-              style={{
-                top: `${10 + i * 6}%`,
-                left: "-20%",
-                right: "-20%",
-                transform: `rotate(${-2 + Math.random() * 4}deg)`,
-              }}
-              animate={{
-                x: ["-100%", "100%"],
-                opacity: [0, 0.8, 0],
-              }}
-              transition={{
-                duration: 1.5 + Math.random(),
-                repeat: Infinity,
-                delay: Math.random() * 5,
-                ease: "linear",
-              }}
-            />
-          ))}
-        </div>
-      </div>
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden paper-grain">
+      {/* Monochrome backdrop */}
+      <div className="halftone absolute inset-0 opacity-30" />
+      <div className="crosshatch-soft absolute inset-0" />
+
+      {/* Hand-drawn rings */}
+      <svg
+        className="absolute -top-32 -right-32 h-[30rem] w-[30rem] opacity-[0.07]"
+        viewBox="0 0 200 200"
+        fill="none"
+      >
+        <circle cx="100" cy="100" r="98" stroke="#14110c" strokeWidth="2" />
+        <circle cx="100" cy="100" r="84" stroke="#14110c" strokeWidth="1" strokeDasharray="5 5" />
+      </svg>
+      <svg
+        className="absolute -bottom-40 -left-40 h-[34rem] w-[34rem] opacity-[0.06]"
+        viewBox="0 0 200 200"
+        fill="none"
+      >
+        <circle cx="100" cy="100" r="98" stroke="#14110c" strokeWidth="2" />
+        <circle cx="100" cy="100" r="88" stroke="#14110c" strokeWidth="1" />
+      </svg>
 
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
-        {/* Anime power level badge */}
+      <div className="relative z-10 mx-auto max-w-5xl px-4 text-center">
+        {/* Top stamps */}
         <motion.div
-          initial={{ opacity: 0, y: -30, scale: 0.8 }}
+          initial={{ opacity: 0, y: -20, scale: 0.9 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.6, type: "spring" }}
-          className="inline-flex items-center gap-3 px-6 py-3 rounded-full border-2 border-orange-500/50 bg-orange-500/10 mb-8"
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="mb-8 flex items-center justify-center gap-4"
         >
-          <motion.div
-            animate={{ rotate: [0, 360] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <Swords className="w-5 h-5 text-orange-400" />
-          </motion.div>
-          <span className="text-sm font-bold text-orange-400 tracking-wider uppercase">
-            Danger Level: Extreme
+          <span className="stamp">EST. MMXXVI</span>
+          <span className="stamp stamp-invert hidden sm:inline-block">
+            DANGER LEVEL: MEASURED
           </span>
-          <motion.div
-            animate={{ rotate: [360, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <Swords className="w-5 h-5 text-orange-400" />
-          </motion.div>
         </motion.div>
 
-        {/* Main anime title */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
+        {/* Title */}
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.8, type: "spring", stiffness: 100 }}
+          transition={{ delay: 0.25, duration: 0.7 }}
+          className="mb-6 font-[var(--font-display)] font-black leading-[0.95] tracking-tight"
         >
-          <h1 
-            className="text-6xl md:text-8xl lg:text-9xl font-black mb-6 leading-none"
-            style={{
-              fontFamily: "var(--font-display)",
-              textShadow: "0 0 60px rgba(255,100,0,0.7), 0 0 120px rgba(255,50,0,0.5), 0 0 180px rgba(255,0,0,0.3)",
-            }}
-          >
-            <motion.span 
-              className="block text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-red-500 to-orange-600"
-              animate={{ 
-                textShadow: [
-                  "0 0 20px rgba(255,100,0,0.5)",
-                  "0 0 40px rgba(255,100,0,0.8)",
-                  "0 0 20px rgba(255,100,0,0.5)",
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              WELCOME TO THE
-            </motion.span>
-            <motion.span 
-              className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-white via-orange-200 to-white"
-              animate={{ scale: [1, 1.02, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              ULTIMATE AURA
-            </motion.span>
-            <motion.span 
-              className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500"
-              animate={{ 
-                backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-              style={{ backgroundSize: "200% 100%" }}
-            >
-              CALCULATOR
-            </motion.span>
-          </h1>
-        </motion.div>
+          <span className="mono-label mb-4 block text-base sm:text-lg">
+            THE
+          </span>
+          <span className="block text-6xl uppercase sm:text-8xl lg:text-9xl">
+            GIGA
+          </span>
+          <span className="sketch-underline block text-6xl uppercase sm:text-8xl lg:text-9xl">
+            OP METER
+          </span>
+          <span className="mono-label mt-4 block text-sm">
+            — A CERTIFIED AURA MEASUREMENT DEVICE —
+          </span>
+        </motion.h1>
 
-        {/* Anime quote rotation */}
-        <div className="h-12 mb-6">
+        {/* Rotating quote */}
+        <div className="mb-6 flex h-14 items-center justify-center">
           <AnimatePresence mode="wait">
             <motion.p
               key={quoteIndex}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="text-xl md:text-2xl text-orange-300/80 italic font-medium"
-              style={{ fontFamily: "var(--font-display)" }}
+              exit={{ opacity: 0, y: -12 }}
+              className="font-[var(--font-mono)] text-lg text-[var(--ink-muted)] sm:text-xl"
             >
-              &ldquo;{ANIME_QUOTES[quoteIndex]}&rdquo;
+              <span className="text-[var(--ink)]">&ldquo;</span>
+              {QUOTES[quoteIndex]}
+              <span className="text-[var(--ink)]">&rdquo;</span>
+              <span className="caret text-[var(--ink)]" />
             </motion.p>
           </AnimatePresence>
         </div>
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8, duration: 0.6 }}
-          className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto mb-4 leading-relaxed"
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="mx-auto mb-4 max-w-3xl text-lg leading-relaxed text-[var(--ink-soft)] sm:text-xl"
         >
-          This isn&apos;t your average personality quiz. This is a{" "}
-          <span className="text-orange-400 font-bold">50-question psychological warfare</span>{" "}
-          engine designed to strip away your filter and reveal your{" "}
-          <motion.span 
-            className="text-red-400 font-bold"
-            animate={{ 
-              textShadow: [
-                "0 0 10px rgba(239,68,68,0.5)",
-                "0 0 20px rgba(239,68,68,0.8)",
-                "0 0 10px rgba(239,68,68,0.5)",
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            TRUE aura
-          </motion.span>.
+          Not your average personality quiz. This is a{" "}
+          <span className="font-bold text-[var(--ink)]">50-question psychometric examination</span>{" "}
+          built to strip away your filter and expose your{" "}
+          <span className="sketch-underline font-bold text-[var(--ink)]">TRUE aura</span>.
         </motion.p>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.6 }}
-          className="text-lg text-white/50 max-w-2xl mx-auto mb-12"
+          transition={{ delay: 0.7, duration: 0.6 }}
+          className="mx-auto mb-10 max-w-2xl font-[var(--font-mono)] text-sm text-[var(--ink-muted)]"
         >
-          The system tracks your every move. Response times. Consistency. Hesitation.{" "}
-          <span className="text-red-500 font-bold">Lie detection</span>. There is{" "}
-          <span className="text-red-500 font-bold">no hiding</span> from the Aura Calculator.
+          Response times. Consistency. Hesitation. Instinct velocity. There is{" "}
+          <span className="font-bold text-[var(--ink)]">no hiding</span> from the machine.
         </motion.p>
 
-        {/* Stats row with anime style */}
+        {/* Stats stickers */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="flex flex-wrap justify-center gap-4 mb-12"
+          transition={{ delay: 0.8, duration: 0.6 }}
+          className="mb-12 flex flex-wrap items-center justify-center gap-4"
         >
-          {[
-            { icon: <Eye className="w-5 h-5" />, label: "50 Questions", color: "#00ffff" },
-            { icon: <Zap className="w-5 h-5" />, label: "Real-Time Lie Detection", color: "#fbbf24" },
-            { icon: <Flame className="w-5 h-5" />, label: "5 Pressure Phases", color: "#ff4500" },
-            { icon: <Skull className="w-5 h-5" />, label: "5 Danger Tiers", color: "#ef4444" },
-          ].map((stat, i) => (
-            <motion.div 
-              key={i} 
-              className="flex items-center gap-2 px-5 py-3 rounded-xl border-2 bg-white/5"
-              style={{ borderColor: `${stat.color}40` }}
-              whileHover={{ 
-                scale: 1.05,
-                borderColor: stat.color,
-                boxShadow: `0 0 20px ${stat.color}40`,
-              }}
+          {STATS.map((stat, i) => (
+            <div
+              key={i}
+              className={`sketch-card-thin flex items-center gap-2 px-4 py-2.5 ${i % 2 === 0 ? "tilt-l" : "tilt-r"}`}
             >
-              <span style={{ color: stat.color }}>{stat.icon}</span>
-              <span className="text-sm font-semibold text-white/90">{stat.label}</span>
-            </motion.div>
+              <span className="text-[var(--ink)]">{stat.icon}</span>
+              <span className="font-[var(--font-mono)] text-xs font-semibold tracking-wider text-[var(--ink-soft)]">
+                {stat.label}
+              </span>
+            </div>
           ))}
         </motion.div>
 
-        {/* CTA Buttons with anime style */}
+        {/* CTA buttons */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 1.4, duration: 0.5, type: "spring" }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          transition={{ delay: 0.95, duration: 0.5, type: "spring" }}
+          className="flex flex-col items-center justify-center gap-6 sm:flex-row"
         >
-          {/* Full Exam Button */}
           <motion.button
             onClick={onStart}
-            className="group relative px-12 py-6 rounded-2xl font-bold text-xl text-white overflow-hidden border-2 border-orange-500/50"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="sketch-btn text-lg"
+            whileHover={{ rotate: -0.6 }}
+            whileTap={{ scale: 0.97 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-red-600 to-orange-700 transition-all duration-300" />
-            <div className="absolute inset-0 bg-gradient-to-r from-red-700 via-orange-600 to-red-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"
-              animate={{
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="relative z-10 flex items-center gap-3">
-              <motion.span
-                animate={{ rotate: [0, 15, -15, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
-              >
-                <Flame className="w-6 h-6" />
-              </motion.span>
-              FULL 50-QUESTION EXAM
-              <motion.span
-                animate={{ rotate: [0, -15, 15, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
-              >
-                <Flame className="w-6 h-6" />
-              </motion.span>
-            </span>
+            <Swords className="h-6 w-6" />
+            FULL 50-QUESTION EXAM
           </motion.button>
 
-          {/* Quick Check Button */}
           <motion.button
             onClick={onQuickCheck}
-            className="group relative px-12 py-6 rounded-2xl font-bold text-xl text-white overflow-hidden border-2 border-purple-500/50"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="sketch-btn sketch-btn-outline text-lg"
+            whileHover={{ rotate: 0.6 }}
+            whileTap={{ scale: 0.97 }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-700 transition-all duration-300" />
-            <div className="absolute inset-0 bg-gradient-to-r from-pink-600 via-purple-500 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <motion.div 
-              className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-300"
-              animate={{
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-            <span className="relative z-10 flex items-center gap-3">
-              <motion.span
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 1, repeat: Infinity }}
-              >
-                <Sparkles className="w-6 h-6" />
-              </motion.span>
-              QUICK 10-QUESTION CHECK
-              <motion.span
-                animate={{ scale: [1, 1.3, 1] }}
-                transition={{ duration: 1, repeat: Infinity, delay: 0.5 }}
-              >
-                <Sparkles className="w-6 h-6" />
-              </motion.span>
-            </span>
+            QUICK 10-QUESTION CHECK
           </motion.button>
         </motion.div>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.8 }}
-          className="text-sm text-white/40 mt-8 flex items-center justify-center gap-2"
+          transition={{ delay: 1.2 }}
+          className="mt-10 flex items-center justify-center gap-2 font-[var(--font-mono)] text-xs text-[var(--ink-faint)]"
         >
-          <motion.span
-            animate={{ opacity: [1, 0.5, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            ⚠️
-          </motion.span>
-          Warning: Both quizzes use psychological pressure techniques. Enter at your own risk.
-          <motion.span
-            animate={{ opacity: [1, 0.5, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            ⚠️
-          </motion.span>
+          WARNING: BOTH EXAMINATIONS USE PSYCHOLOGICAL PRESSURE TECHNIQUES. ENTER AT YOUR OWN RISK.
         </motion.p>
       </div>
 
-      {/* Bottom gradient fade with anime style */}
-      <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black via-black/50 to-transparent" />
-      
-      {/* Side fire effects */}
-      <motion.div 
-        className="absolute left-0 top-1/3 bottom-1/3 w-20 bg-gradient-to-r from-orange-500/20 to-transparent"
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      />
-      <motion.div 
-        className="absolute right-0 top-1/3 bottom-1/3 w-20 bg-gradient-to-l from-orange-500/20 to-transparent"
-        animate={{ opacity: [0.3, 0.6, 0.3] }}
-        transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-      />
+      {/* Bottom paper fade */}
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--paper-deep)] to-transparent" />
     </section>
   );
 }
