@@ -1,19 +1,10 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { QUICK_QUESTIONS, QUICK_CHARACTERS, QuickCharacter } from "@/lib/quickQuestions";
-import {
-  Flame,
-  Zap,
-  Skull,
-  Eye,
-  Brain,
-  Clock,
-  Trophy,
-  Sparkles,
-} from "lucide-react";
+import { Zap, Brain, Trophy, Swords } from "lucide-react";
 
 function calculateQuickResult(answers: { questionId: number; optionId: string }[]) {
   const scores: Record<string, number> = {};
@@ -51,6 +42,7 @@ export function QuickCheckPage() {
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState<ReturnType<typeof calculateQuickResult> | null>(null);
   const [streak, setStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const bestStreakRef = useRef(0);
   const [showStreakPopup, setShowStreakPopup] = useState(false);
   const answeringRef = useRef(false);
@@ -76,6 +68,7 @@ export function QuickCheckPage() {
           const newStreak = prev + 1;
           if (newStreak > bestStreakRef.current) {
             bestStreakRef.current = newStreak;
+            setBestStreak(newStreak);
           }
           if (newStreak >= 3 && newStreak % 3 === 0) {
             setShowStreakPopup(true);
@@ -127,10 +120,10 @@ export function QuickCheckPage() {
 
   if (showResult && result) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)]">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/50">Revealing your aura...</p>
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[var(--ink)] border-t-transparent" />
+          <p className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">REVEALING YOUR AURA...</p>
         </div>
       </div>
     );
@@ -139,45 +132,67 @@ export function QuickCheckPage() {
   // Intro screen
   if (showIntro) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-black via-[#0a0015] to-black relative overflow-hidden">
-        {/* Floating particles */}
-        {Array.from({ length: 20 }).map((_, i) => (
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--paper)] p-4 paper-grain">
+        <div className="halftone absolute inset-0 opacity-30" />
+        <div className="crosshatch-soft absolute inset-0" />
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative z-10 w-full max-w-2xl text-center"
+        >
           <motion.div
-            key={i}
-            className="absolute w-1 h-1 bg-purple-400/30 rounded-full"
-            initial={{ x: Math.random() * (typeof window !== "undefined" ? window.innerWidth : 1000), y: Math.random() * (typeof window !== "undefined" ? window.innerHeight : 800) }}
-            animate={{ x: [Math.random() * 1000, Math.random() * 1000], y: [Math.random() * 800, Math.random() * 800], opacity: [0, 0.5, 0] }}
-            transition={{ duration: 5 + Math.random() * 10, repeat: Infinity, delay: Math.random() * 5 }}
-          />
-        ))}
-
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl w-full text-center relative z-10">
-          <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 3, repeat: Infinity }} className="mb-8">
-            <h1 className="text-5xl md:text-7xl font-black mb-4">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-cyan-400">
-                QUICK AURA CHECK
-              </span>
+            animate={{ scale: [1, 1.03, 1] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="mb-8"
+          >
+            <h1 className="mb-4 font-[var(--font-display)] text-5xl font-black uppercase sm:text-7xl">
+              <span className="sketch-underline">Quick aura check</span>
             </h1>
+            <div className="flex items-center justify-center gap-4">
+              <span className="stamp">10 QUESTIONS</span>
+              <span className="stamp stamp-invert">INSTINCT ONLY</span>
+            </div>
           </motion.div>
-          <p className="text-xl text-white/50 mb-4">10 questions. 10 seconds each. Your true aura revealed.</p>
-          <p className="text-sm text-white/30 mb-8">No overthinking. First instinct only.</p>
 
-          <div className="flex justify-center gap-2 mb-8 flex-wrap">
+          <p className="mb-2 text-lg text-[var(--ink-soft)]">
+            10 questions. 10 seconds each. Your true aura revealed.
+          </p>
+          <p className="mb-8 font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
+            NO OVERTHINKING. FIRST INSTINCT ONLY.
+          </p>
+
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
             {QUICK_CHARACTERS.slice(0, 4).map((char) => (
-              <motion.span key={char.id} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="px-4 py-2 rounded-xl bg-white/5 text-xs text-white/60 border border-white/10">
+              <span key={char.id} className="sketch-card-thin px-4 py-2 font-[var(--font-mono)] text-xs text-[var(--ink-soft)]">
                 {char.emoji} {char.name}
-              </motion.span>
+              </span>
             ))}
-            <span className="px-4 py-2 rounded-xl bg-white/5 text-xs text-white/40 border border-white/10">+2 more</span>
+            <span className="sketch-card-thin px-4 py-2 font-[var(--font-mono)] text-xs text-[var(--ink-faint)]">
+              +2 MORE
+            </span>
           </div>
 
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => { setShowIntro(false); setQuestionStartTime(Date.now()); }}
-            className="px-12 py-5 rounded-2xl font-bold text-xl text-white bg-gradient-to-r from-purple-500 to-pink-500 shadow-[0_0_40px_rgba(168,85,247,0.4)] hover:shadow-[0_0_60px_rgba(168,85,247,0.6)] transition-shadow">
-            <Sparkles className="w-6 h-6 inline mr-2" />START QUICK CHECK
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.97 }}
+            onClick={() => {
+              setShowIntro(false);
+              setQuestionStartTime(Date.now());
+            }}
+            className="sketch-btn text-lg"
+          >
+            <Swords className="h-6 w-6" />
+            START QUICK CHECK
           </motion.button>
 
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="text-xs text-white/30 mt-6">
-            ⚡ Faster than the full 50-question exam. Same accuracy. Zero mercy.
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="mt-6 font-[var(--font-mono)] text-xs text-[var(--ink-faint)]"
+          >
+            FASTER THAN THE FULL 50-QUESTION EXAM. SAME ACCURACY. ZERO MERCY.
           </motion.p>
         </motion.div>
       </div>
@@ -186,104 +201,141 @@ export function QuickCheckPage() {
 
   // Quiz in progress
   return (
-    <div className="min-h-screen p-4 md:p-8 bg-gradient-to-b from-black via-[#0a0015] to-black relative">
+    <div className="relative min-h-screen bg-[var(--paper)] p-4 md:p-8 paper-grain">
+      <div className="crosshatch-soft absolute inset-0" />
+
       {/* Streak popup */}
       <AnimatePresence>
         {showStreakPopup && (
-          <motion.div initial={{ opacity: 0, y: -50, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -50, scale: 0.8 }}
-            className="fixed top-20 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 shadow-[0_0_40px_rgba(168,85,247,0.6)]">
+          <motion.div
+            initial={{ opacity: 0, y: -50, scale: 0.8 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -50, scale: 0.8 }}
+            className="fixed left-1/2 top-20 z-50 -translate-x-1/2 sketch-card px-6 py-3"
+          >
             <div className="flex items-center gap-3">
-              <Trophy className="w-6 h-6 text-white" />
-              <span className="text-xl font-black text-white">{streak}x STREAK!</span>
+              <Trophy className="h-6 w-6 text-[var(--ink)]" />
+              <span className="font-[var(--font-mono)] text-xl font-black text-[var(--ink)]">
+                {streak}x STREAK!
+              </span>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Score estimate */}
-      <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-        className="fixed bottom-4 left-4 z-50 px-4 py-2 rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-purple-400" />
-          <span className="text-xs text-white/40">QUICK CHECK</span>
-          <span className="text-sm font-bold text-purple-400">{currentQuestion + 1}/{questions.length}</span>
+      {/* Corner badges */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="sketch-card-thin fixed bottom-4 left-4 z-50 px-4 py-2"
+      >
+        <div className="flex items-center gap-2 font-[var(--font-mono)]">
+          <span className="text-xs text-[var(--ink-muted)]">QUICK CHECK</span>
+          <span className="text-sm font-bold text-[var(--ink)]">
+            {currentQuestion + 1}/{questions.length}
+          </span>
         </div>
       </motion.div>
 
-      {/* Streak counter */}
-      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}
-        className="fixed bottom-4 right-4 z-50 px-4 py-2 rounded-xl border border-white/10 bg-black/50 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <Zap className="w-4 h-4 text-yellow-400" />
-          <span className="text-xs text-white/40">STREAK:</span>
-          <span className="text-sm font-bold text-yellow-400">{streak}x</span>
-          {bestStreak > 0 && <span className="text-xs text-white/30">({bestStreak} best)</span>}
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="sketch-card-thin fixed bottom-4 right-4 z-50 px-4 py-2"
+      >
+        <div className="flex items-center gap-2 font-[var(--font-mono)]">
+          <Zap className="h-4 w-4 text-[var(--ink)]" />
+          <span className="text-xs text-[var(--ink-muted)]">STREAK:</span>
+          <span className="text-sm font-bold text-[var(--ink)]">{streak}x</span>
+          {bestStreak > 0 && (
+            <span className="text-xs text-[var(--ink-faint)]">({bestStreak} BEST)</span>
+          )}
         </div>
       </motion.div>
 
       {/* Header */}
-      <div className="max-w-2xl mx-auto mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="mx-auto mb-8 max-w-2xl">
+        <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <motion.span key={currentQuestion} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="px-3 py-1 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold shadow-lg">
-              QUICK CHECK
-            </motion.span>
-            <span className="text-sm text-white/50">Question {currentQuestion + 1} of {questions.length}</span>
+            <span className="stamp">QUICK CHECK</span>
+            <span className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
+              QUESTION {currentQuestion + 1} OF {questions.length}
+            </span>
           </div>
         </div>
-        <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-          <motion.div className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500" animate={{ width: `${progress}%` }} transition={{ duration: 0.5 }} />
+        <div className="meter-track w-full">
+          <motion.div
+            className="meter-fill"
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.5 }}
+          />
         </div>
       </div>
 
       {/* Question */}
-      <div className="max-w-2xl mx-auto">
+      <div className="mx-auto max-w-2xl">
         <AnimatePresence mode="wait">
-          <motion.div key={currentQuestion} initial={{ opacity: 0, x: 50, rotateY: -10 }} animate={{ opacity: 1, x: 0, rotateY: 0 }} exit={{ opacity: 0, x: -50, rotateY: 10 }}
+          <motion.div
+            key={currentQuestion}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.4, type: "spring" }}
-            className="rounded-2xl p-6 md:p-8 border border-purple-500/20 bg-purple-950/20 shadow-[0_0_20px_rgba(168,85,247,0.1)]">
-
-            <motion.h2 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="text-2xl md:text-3xl font-bold text-white/95 mb-6">
+            className="sketch-card p-6 md:p-8"
+          >
+            <motion.h2
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="mb-6 font-[var(--font-display)] text-2xl font-bold text-[var(--ink)] md:text-3xl"
+            >
               {currentQ.text}
             </motion.h2>
             {currentQ.subtext && (
-              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-sm text-white/50 italic mb-6">
-                {currentQ.subtext}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.25 }}
+                className="mb-6 font-[var(--font-mono)] text-xs italic text-[var(--ink-muted)]"
+              >
+                {currentQ.subtext.toUpperCase()}
               </motion.p>
             )}
 
             {/* Options */}
             <div className="space-y-3">
               {currentQ.options.map((option, displayIndex) => (
-                <motion.button key={option.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                <motion.button
+                  key={option.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + displayIndex * 0.08, type: "spring" }}
-                  whileHover={{ scale: 1.02, x: 10 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => { setSelectedOption(option.id); handleAnswer(currentQ.id, option.id); }}
-                  className={`w-full text-left p-4 md:p-5 rounded-xl transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-black ${
-                    selectedOption === option.id
-                      ? "border-2 border-purple-500 bg-purple-500/10 shadow-[0_0_20px_rgba(168,85,247,0.3)]"
-                      : "border border-purple-500/20 hover:border-purple-500/40 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(168,85,247,0.2)]"
-                  }`}>
-                  <div className="flex items-center gap-4">
-                    <motion.span whileHover={{ rotate: [0, -10, 10, 0] }}
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-all ${
-                        selectedOption === option.id ? "bg-purple-500 text-white" : "bg-white/5 text-white/50 group-hover:bg-purple-500/20 group-hover:text-purple-400"
-                      }`}>
-                      {String.fromCharCode(65 + displayIndex)}
-                    </motion.span>
-                    <span className="text-base md:text-lg text-white/90">{option.text}</span>
-                  </div>
+                  onClick={() => {
+                    setSelectedOption(option.id);
+                    handleAnswer(currentQ.id, option.id);
+                  }}
+                  className={`sketch-option ${selectedOption === option.id ? "sketch-option-selected" : ""}`}
+                >
+                  <span className="sketch-letter">{String.fromCharCode(65 + displayIndex)}</span>
+                  <span
+                    className={`flex-1 text-left text-base md:text-lg ${
+                      selectedOption === option.id ? "text-[var(--paper)]" : "text-[var(--ink-soft)]"
+                    }`}
+                  >
+                    {option.text}
+                  </span>
                 </motion.button>
               ))}
             </div>
 
             {/* Phase hint */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-              className="mt-6 flex items-center gap-2 text-xs text-purple-400/70">
-              <Brain className="w-4 h-4" />
-              <span>⚡ Instinct velocity is being tracked. Don&apos;t overthink.</span>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-6 flex items-center gap-2 font-[var(--font-mono)] text-xs text-[var(--ink-muted)]"
+            >
+              <Brain className="h-4 w-4" />
+              <span>INSTINCT VELOCITY IS BEING TRACKED. DON&apos;T OVERTHINK.</span>
             </motion.div>
           </motion.div>
         </AnimatePresence>
