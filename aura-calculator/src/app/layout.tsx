@@ -1,42 +1,44 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { Playfair_Display, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 
-const spaceGrotesk = Space_Grotesk({
+const playfair = Playfair_Display({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  style: ["normal", "italic"],
 });
 
 const inter = Inter({
   variable: "--font-body",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
-
 export const metadata: Metadata = {
-  title: "Aura Calculator — Discover Your Inner Light",
+  title: "GIGACHAD OP METER — The Original Aura Calculator",
   description:
-    "An interactive 50-question psycho-analytical quiz that reveals the five dimensions of your aura. Track cognitive depth, emotional resonance, intuitive flow, creative vision, and spiritual alignment.",
+    "A 50-question psychometric examination that measures your presence, composure and instinct velocity. Five phases. Five tiers. Zero colours. Pure measurement.",
   keywords: [
     "aura",
-    "personality",
-    "psycho-analysis",
-    "5D personality",
-    "spiritual",
-    "quiz",
-    "inner light",
+    "gigachad",
+    "personality test",
+    "psychometric",
+    "op meter",
+    "aura calculator",
+    "tier list",
+    "instinct velocity",
   ],
   openGraph: {
-    title: "Aura Calculator — Discover Your Inner Light",
+    title: "GIGACHAD OP METER — The Original Aura Calculator",
     description:
-      "An interactive 50-question psycho-analytical quiz that reveals the five dimensions of your aura.",
+      "A 50-question psychometric examination that measures your presence, composure and instinct velocity.",
     type: "website",
   },
 };
@@ -49,9 +51,34 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${playfair.variable} ${inter.variable} ${plexMono.variable}`}
     >
-      <body className="min-h-screen bg-[var(--cosmic-void)] text-[var(--star-white)] font-[var(--font-body)] antialiased">
+      <body className="min-h-screen bg-[var(--paper)] text-[var(--ink)] font-[var(--font-body)] antialiased">
+        {/* Hidden SVG for hand-drawn roughness filter */}
+        <svg
+          className="absolute h-0 w-0"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <filter id="rough">
+              <feTurbulence
+                type="fractalNoise"
+                baseFrequency="0.045"
+                numOctaves="2"
+                result="noise"
+                seed="7"
+              />
+              <feDisplacementMap
+                in="SourceGraphic"
+                in2="noise"
+                scale="3"
+                xChannelSelector="R"
+                yChannelSelector="G"
+              />
+            </filter>
+          </defs>
+        </svg>
         {children}
       </body>
     </html>
