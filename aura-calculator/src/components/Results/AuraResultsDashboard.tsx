@@ -25,7 +25,6 @@ import {
   TrendingUp,
   Brain,
   Heart,
-  Swords,
   Flame,
   Crown,
 } from "lucide-react";
@@ -37,8 +36,8 @@ function CanvasErrorBoundary({ children }: { children: React.ReactNode }) {
   return (
     <ErrorBoundary
       fallback={
-        <div className="w-full h-full flex items-center justify-center text-white/30 text-sm">
-          3D unavailable
+        <div className="w-full h-full flex items-center justify-center text-[var(--ink-muted)] font-[var(--font-mono)] text-xs">
+          3D UNAVAILABLE
         </div>
       }
     >
@@ -61,6 +60,9 @@ type ResultsProps = {
   auraVelocity: number[];
   onRestart: () => void;
 };
+
+const INK = "#14110c";
+const PAPER = "#fbfaf6";
 
 // ===== 3D AURA ORB =====
 function AuraOrb3D({ color, intensity }: { color: string; intensity: number }) {
@@ -88,11 +90,11 @@ function AuraOrb3D({ color, intensity }: { color: string; intensity: number }) {
         <meshStandardMaterial
           color={color}
           transparent
-          opacity={0.7}
+          opacity={0.85}
           emissive={color}
           emissiveIntensity={intensity}
-          roughness={0.1}
-          metalness={0.3}
+          roughness={0.4}
+          metalness={0.2}
         />
       </mesh>
       {/* Inner glow */}
@@ -101,9 +103,9 @@ function AuraOrb3D({ color, intensity }: { color: string; intensity: number }) {
         <meshStandardMaterial
           color="#ffffff"
           transparent
-          opacity={0.4}
+          opacity={0.5}
           emissive="#ffffff"
-          emissiveIntensity={0.5}
+          emissiveIntensity={0.6}
         />
       </mesh>
       {/* Outer aura */}
@@ -112,9 +114,9 @@ function AuraOrb3D({ color, intensity }: { color: string; intensity: number }) {
         <meshStandardMaterial
           color={color}
           transparent
-          opacity={0.15}
+          opacity={0.12}
           emissive={color}
-          emissiveIntensity={0.3}
+          emissiveIntensity={0.25}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -125,16 +127,14 @@ function AuraOrb3D({ color, intensity }: { color: string; intensity: number }) {
 function AuraScene({ color, intensity }: { color: string; intensity: number }) {
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1} color={color} />
-      <pointLight position={[-5, -5, 5]} intensity={0.5} color="#ffffff" />
+      <ambientLight intensity={0.5} />
+      <pointLight position={[5, 5, 5]} intensity={0.8} color={color} />
+      <pointLight position={[-5, -5, 5]} intensity={0.4} color="#ffffff" />
       <AuraOrb3D color={color} intensity={intensity} />
-      <Sparkles count={150} scale={10} size={3} speed={1} opacity={0.8} color={color} />
+      <Sparkles count={120} scale={10} size={2.5} speed={1} opacity={0.6} color="#14110c" />
     </>
   );
 }
-
-
 
 // ===== 5-AXIS RADAR CHART =====
 function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
@@ -143,10 +143,10 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
   const maxRadius = 110;
 
   const axisOrder: AuraAxis[] = ["presence", "composure", "fluidity", "desperation", "fumble"];
-  const axisLabels = ["Presence (α)", "Composure (β)", "Fluidity (γ)", "Desperation (δ)", "Fumble (φ)"];
-  const axisColors = ["#00ffff", "#a855f7", "#10b981", "#f59e0b", "#ef4444"];
+  const axisLabels = ["Presence", "Composure", "Fluidity", "Desperation", "Fumble"];
+  const axisColors = [INK, "#3d382f", "#4d463b", "#6f685c", "#14110c"];
 
-  const normalizedAxes = axisOrder.map((axis, i) => {
+  const normalizedAxes = axisOrder.map((axis) => {
     const raw = axes[axis] || 0;
     const isNegative = axis === "desperation" || axis === "fumble";
     const normalized = isNegative
@@ -185,7 +185,7 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
               })
               .join(" ")}
             fill="none"
-            stroke="rgba(255,255,255,0.1)"
+            stroke="rgba(20,17,12,0.15)"
             strokeWidth="1"
           />
         ))}
@@ -200,7 +200,7 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
               y1={centerY}
               x2={centerX + Math.cos(angle) * maxRadius}
               y2={centerY + Math.sin(angle) * maxRadius}
-              stroke="rgba(255,255,255,0.1)"
+              stroke="rgba(20,17,12,0.15)"
               strokeWidth="1"
             />
           );
@@ -210,7 +210,7 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
         <polygon
           points={polygonPoints}
           fill="url(#radarGradient)"
-          stroke="rgba(0,255,255,0.8)"
+          stroke={INK}
           strokeWidth="2"
         />
 
@@ -222,7 +222,7 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
             cy={p.y}
             r="6"
             fill={axisColors[i]}
-            stroke="white"
+            stroke={PAPER}
             strokeWidth="2"
           />
         ))}
@@ -235,7 +235,7 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
               y={p.labelY}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="white"
+              fill={INK}
               fontSize="8"
               fontWeight="600"
             >
@@ -257,9 +257,8 @@ function AxisRadar({ axes }: { axes: Record<AuraAxis, number> }) {
 
         <defs>
           <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#00ffff" stopOpacity="0.3" />
-            <stop offset="50%" stopColor="#a855f7" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#10b981" stopOpacity="0.3" />
+            <stop offset="0%" stopColor={INK} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={INK} stopOpacity="0.1" />
           </linearGradient>
         </defs>
       </svg>
@@ -295,7 +294,7 @@ function AuraVelocityGraph({ velocity }: { velocity: number[] }) {
             y1={padding + level * (height - padding * 2)}
             x2={width - padding}
             y2={padding + level * (height - padding * 2)}
-            stroke="rgba(255,255,255,0.05)"
+            stroke="rgba(20,17,12,0.08)"
             strokeWidth="1"
           />
         ))}
@@ -306,7 +305,7 @@ function AuraVelocityGraph({ velocity }: { velocity: number[] }) {
           y1={padding + (maxScore / range) * (height - padding * 2)}
           x2={width - padding}
           y2={padding + (maxScore / range) * (height - padding * 2)}
-          stroke="rgba(255,255,255,0.2)"
+          stroke="rgba(20,17,12,0.25)"
           strokeWidth="1"
           strokeDasharray="4"
         />
@@ -314,8 +313,8 @@ function AuraVelocityGraph({ velocity }: { velocity: number[] }) {
         {/* Gradient fill */}
         <defs>
           <linearGradient id="velocityGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#00ffff" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#00ffff" stopOpacity="0" />
+            <stop offset="0%" stopColor={INK} stopOpacity="0.2" />
+            <stop offset="100%" stopColor={INK} stopOpacity="0" />
           </linearGradient>
         </defs>
 
@@ -325,7 +324,7 @@ function AuraVelocityGraph({ velocity }: { velocity: number[] }) {
         />
 
         {/* Line */}
-        <path d={linePath} fill="none" stroke="#00ffff" strokeWidth="2" />
+        <path d={linePath} fill="none" stroke={INK} strokeWidth="2" />
 
         {/* Data points */}
         {points.map((p, i) => (
@@ -334,23 +333,23 @@ function AuraVelocityGraph({ velocity }: { velocity: number[] }) {
             cx={p.x}
             cy={p.y}
             r="3"
-            fill="#00ffff"
-            stroke="white"
+            fill={INK}
+            stroke={PAPER}
             strokeWidth="1"
           />
         ))}
 
         {/* Axis labels */}
-        <text x={padding} y={height - 10} fill="rgba(255,255,255,0.3)" fontSize="10">
+        <text x={padding} y={height - 10} fill="rgba(20,17,12,0.4)" fontSize="10" fontFamily="monospace">
           Q1
         </text>
-        <text x={width - padding - 10} y={height - 10} fill="rgba(255,255,255,0.3)" fontSize="10">
+        <text x={width - padding - 10} y={height - 10} fill="rgba(20,17,12,0.4)" fontSize="10" fontFamily="monospace">
           Q50
         </text>
-        <text x={5} y={padding + 5} fill="rgba(255,255,255,0.3)" fontSize="10">
+        <text x={5} y={padding + 5} fill="rgba(20,17,12,0.4)" fontSize="10" fontFamily="monospace">
           {Math.round(maxScore)}
         </text>
-        <text x={5} y={height - padding + 5} fill="rgba(255,255,255,0.3)" fontSize="10">
+        <text x={5} y={height - padding + 5} fill="rgba(20,17,12,0.4)" fontSize="10" fontFamily="monospace">
           {Math.round(minScore)}
         </text>
       </svg>
@@ -359,30 +358,22 @@ function AuraVelocityGraph({ velocity }: { velocity: number[] }) {
 }
 
 // ===== POWER LEVEL METER =====
-function PowerLevelMeter({ score, tier }: { score: number; tier: AuraTier }) {
-  const tierInfo = TIERS[tier];
-  const normalizedScore = Math.min(100, Math.max(0, (score + 5000) / 23000 * 100));
-  
+function PowerLevelMeter({ score }: { score: number }) {
+  const normalizedScore = Math.min(100, Math.max(0, ((score + 5000) / 23000) * 100));
+
   return (
     <div className="relative">
-      <div className="h-8 bg-white/5 rounded-full overflow-hidden border border-white/10">
+      <div className="meter-track overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${normalizedScore}%` }}
           transition={{ duration: 2, ease: "easeOut" }}
-          className="h-full rounded-full relative overflow-hidden"
-          style={{
-            background: `linear-gradient(90deg, ${tierInfo.color}, white, ${tierInfo.color})`,
-            backgroundSize: "200% 100%",
-            animation: "shimmer 3s linear infinite",
-          }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
-        </motion.div>
+          className="meter-fill"
+        />
       </div>
-      <div className="flex justify-between mt-2">
-        <span className="text-xs text-white/40">NOOB</span>
-        <span className="text-xs text-white/40">ULTIMATE BEAST</span>
+      <div className="mt-2 flex justify-between font-[var(--font-mono)] text-xs">
+        <span className="text-[var(--ink-muted)]">NOOB</span>
+        <span className="text-[var(--ink-muted)]">ULTIMATE BEAST</span>
       </div>
     </div>
   );
@@ -394,12 +385,12 @@ function TruthMatrixTable({ truthMatrix }: { truthMatrix: TruthMatrixEntry[] }) 
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-white/10">
-            <th className="text-left py-3 px-4 text-white/50 font-semibold">Q#</th>
-            <th className="text-left py-3 px-4 text-white/50 font-semibold">Response Time</th>
-            <th className="text-left py-3 px-4 text-white/50 font-semibold">Instinct Velocity</th>
-            <th className="text-left py-3 px-4 text-white/50 font-semibold">Consistent</th>
-            <th className="text-left py-3 px-4 text-white/50 font-semibold">Honeypot</th>
+          <tr className="border-b-2 border-[var(--ink)]">
+            <th className="py-3 px-4 text-left font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">Q#</th>
+            <th className="py-3 px-4 text-left font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">RESPONSE TIME</th>
+            <th className="py-3 px-4 text-left font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">INSTINCT VELOCITY</th>
+            <th className="py-3 px-4 text-left font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">CONSISTENT</th>
+            <th className="py-3 px-4 text-left font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">HONEYPOT</th>
           </tr>
         </thead>
         <tbody>
@@ -409,23 +400,23 @@ function TruthMatrixTable({ truthMatrix }: { truthMatrix: TruthMatrixEntry[] }) 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="border-b border-white/5 hover:bg-white/5 transition-colors"
+              className="border-b border-[var(--ink-line-faint)] hover:bg-[var(--paper-deep)] transition-colors"
             >
-              <td className="py-3 px-4 font-mono text-white/70">Q{entry.questionId}</td>
-              <td className="py-3 px-4 font-mono text-cyan-400">{entry.responseTimeMs}ms</td>
-              <td className="py-3 px-4 font-mono text-purple-400">{entry.instinctVelocity.toFixed(1)}</td>
+              <td className="py-3 px-4 font-[var(--font-mono)] text-[var(--ink-soft)]">Q{entry.questionId}</td>
+              <td className="py-3 px-4 font-[var(--font-mono)] text-[var(--ink)]">{entry.responseTimeMs}ms</td>
+              <td className="py-3 px-4 font-[var(--font-mono)] text-[var(--ink-soft)]">{entry.instinctVelocity.toFixed(1)}</td>
               <td className="py-3 px-4">
                 {entry.isConsistent ? (
-                  <span className="text-green-400">✓</span>
+                  <span className="font-bold text-[var(--ink)]">✓</span>
                 ) : (
-                  <span className="text-red-400">✗</span>
+                  <span className="font-bold text-[var(--ink-muted)]">✗</span>
                 )}
               </td>
               <td className="py-3 px-4">
                 {entry.honeypotTriggered ? (
-                  <span className="text-yellow-400">⚠️</span>
+                  <span className="font-bold text-[var(--ink)]">⚠</span>
                 ) : (
-                  <span className="text-white/30">—</span>
+                  <span className="text-[var(--ink-faint)]">—</span>
                 )}
               </td>
             </motion.tr>
@@ -433,10 +424,22 @@ function TruthMatrixTable({ truthMatrix }: { truthMatrix: TruthMatrixEntry[] }) 
         </tbody>
       </table>
       {truthMatrix.length > 10 && (
-        <p className="text-center text-white/40 text-sm mt-4">
-          Showing 10 of {truthMatrix.length} entries
+        <p className="mt-4 text-center font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
+          SHOWING 10 OF {truthMatrix.length} ENTRIES
         </p>
       )}
+    </div>
+  );
+}
+
+// ===== SECTION HEADER =====
+function SectionHeader({ icon, title }: { icon: React.ReactNode; title: string }) {
+  return (
+    <div className="ink-divider mb-6">
+      <span className="font-[var(--font-display)] text-xl font-black uppercase text-[var(--ink)] md:text-2xl">
+        {title}
+      </span>
+      <span className="text-[var(--ink)]">{icon}</span>
     </div>
   );
 }
@@ -456,7 +459,7 @@ export function AuraResultsDashboard({
 
   // Truth score calculation
   const truthScore = truthMatrix.length > 0
-    ? truthMatrix.filter((t) => t.isConsistent).length / truthMatrix.length * 100
+    ? (truthMatrix.filter((t) => t.isConsistent).length / truthMatrix.length) * 100
     : 0;
   const honeypotTriggers = truthMatrix.filter((t) => t.honeypotTriggered).length;
 
@@ -466,9 +469,6 @@ export function AuraResultsDashboard({
     : 0;
   const fastestResponse = truthMatrix.length > 0
     ? Math.min(...truthMatrix.map((t) => t.responseTimeMs))
-    : 0;
-  const slowestResponse = truthMatrix.length > 0
-    ? Math.max(...truthMatrix.map((t) => t.responseTimeMs))
     : 0;
 
   const container = {
@@ -489,24 +489,18 @@ export function AuraResultsDashboard({
       variants={container}
       initial="hidden"
       animate="show"
-      className="space-y-8 max-w-6xl mx-auto px-4"
+      className="space-y-8 max-w-6xl mx-auto px-4 relative z-10"
     >
       {/* Tier Header with Anime Character */}
       <motion.div variants={item} className="text-center">
         <motion.div
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 border-cyan-400/50 bg-cyan-400/10 mb-6"
-          animate={{ 
-            boxShadow: [
-              "0 0 20px rgba(0, 255, 255, 0.3)",
-              "0 0 40px rgba(0, 255, 255, 0.6)",
-              "0 0 20px rgba(0, 255, 255, 0.3)",
-            ]
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
+          className="stamp mx-auto mb-8"
+          animate={{ rotate: [-1.2, 1.2, -1.2] }}
+          transition={{ duration: 4, repeat: Infinity }}
         >
-          <Target className="w-5 h-5 text-cyan-400" />
-          <span className="text-sm font-bold text-cyan-400 tracking-wider">
-            ⚔️ PSYCHOMETRIC EVALUATION COMPLETE ⚔️
+          <span className="flex items-center gap-2">
+            <Target className="h-4 w-4" />
+            PSYCHOMETRIC EVALUATION COMPLETE
           </span>
         </motion.div>
 
@@ -519,33 +513,27 @@ export function AuraResultsDashboard({
           >
             <AnimeCharacter tier={tier} size={180} />
           </motion.div>
-          
+
           <div className="text-center md:text-left">
-            <h1 className="text-5xl md:text-8xl font-black mb-4">
-              <span className="text-6xl mr-4">{tierInfo.emoji}</span>
-              <span
-                className="text-transparent bg-clip-text"
-                style={{
-                  backgroundImage: `linear-gradient(135deg, ${tierInfo.color}, white)`,
-                }}
-              >
-                {tierInfo.name}
-              </span>
+            <h1 className="mb-4 font-[var(--font-display)] text-5xl font-black text-[var(--ink)] md:text-7xl">
+              <span className="mr-4">{tierInfo.emoji}</span>
+              <span className="sketch-underline">{tierInfo.name}</span>
             </h1>
-            <p className="text-xl text-white/60 max-w-2xl leading-relaxed mb-4">
+            <p className="mb-4 max-w-2xl text-xl leading-relaxed text-[var(--ink-soft)]">
               {tierInfo.description}
             </p>
-            <div className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl glass">
-              <span className="text-sm text-white/50 uppercase tracking-wider">Final Score</span>
+            <div className="sketch-card-thin inline-flex items-center gap-4 px-8 py-4">
+              <span className="font-[var(--font-mono)] text-sm uppercase tracking-wider text-[var(--ink-muted)]">
+                Final Score
+              </span>
               <motion.span
-                className="text-4xl font-black"
-                style={{ color: tierInfo.color }}
-                animate={{ 
+                className="text-4xl font-black font-[var(--font-mono)] text-[var(--ink)]"
+                animate={{
                   textShadow: [
-                    `0 0 10px ${tierInfo.color}50`,
-                    `0 0 30px ${tierInfo.color}80`,
-                    `0 0 10px ${tierInfo.color}50`,
-                  ]
+                    "0 0 0 rgba(20,17,12,0)",
+                    "0 0 12px rgba(20,17,12,0.35)",
+                    "0 0 0 rgba(20,17,12,0)",
+                  ],
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
@@ -558,18 +546,15 @@ export function AuraResultsDashboard({
 
       {/* Power Level Meter */}
       <motion.div variants={item}>
-        <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <Flame className="w-6 h-6 text-orange-400" />
-          Power Level Assessment
-        </h3>
-        <div className="glass rounded-2xl p-6">
-          <PowerLevelMeter score={score} tier={tier} />
+        <SectionHeader icon={<Flame className="h-5 w-5" />} title="Power Level Assessment" />
+        <div className="sketch-card p-6">
+          <PowerLevelMeter score={score} />
         </div>
       </motion.div>
 
       {/* 3D Aura Orb */}
       <motion.div variants={item} className="flex justify-center">
-        <div className="w-80 h-80 rounded-full overflow-hidden glass">
+        <div className="sketch-card h-80 w-80 overflow-hidden">
           <CanvasErrorBoundary>
             <Canvas
               camera={{ position: [0, 0, 5], fov: 50 }}
@@ -592,11 +577,8 @@ export function AuraResultsDashboard({
 
       {/* 5-Axis Radar */}
       <motion.div variants={item}>
-        <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <Brain className="w-6 h-6 text-purple-400" />
-          5-Axis Aura Vector
-        </h3>
-        <div className="glass rounded-2xl p-6">
+        <SectionHeader icon={<Brain className="h-5 w-5" />} title="5-Axis Aura Vector" />
+        <div className="sketch-card p-6">
           <AxisRadar axes={axes} />
         </div>
       </motion.div>
@@ -605,127 +587,110 @@ export function AuraResultsDashboard({
       <motion.div variants={item} className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
-            icon: <Shield className="w-6 h-6" />,
+            icon: <Shield className="h-6 w-6" />,
             label: "Truth Score",
             value: `${Math.round(truthScore)}%`,
-            color: "#10b981",
             description: "Consistency rating",
           },
           {
-            icon: <AlertTriangle className="w-6 h-6" />,
+            icon: <AlertTriangle className="h-6 w-6" />,
             label: "Honeypots Caught",
             value: `${honeypotTriggers}`,
-            color: "#f59e0b",
             description: "Traps detected",
           },
           {
-            icon: <Zap className="w-6 h-6" />,
+            icon: <Zap className="h-6 w-6" />,
             label: "Avg Response",
             value: `${Math.round(avgResponseTime)}ms`,
-            color: "#06b6d4",
             description: "Reaction speed",
           },
           {
-            icon: <Clock className="w-6 h-6" />,
+            icon: <Clock className="h-6 w-6" />,
             label: "Fastest Response",
             value: `${fastestResponse}ms`,
-            color: "#a855f7",
             description: "Peak performance",
           },
         ].map((stat, i) => (
           <motion.div
             key={i}
-            className="glass rounded-xl p-5 text-center group"
-            whileHover={{ y: -5, scale: 1.03 }}
+            className="sketch-card-thin p-5 text-center group"
+            whileHover={{ y: -5, scale: 1.02 }}
           >
-            <div
-              className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center group-hover:scale-110 transition-transform"
-              style={{ backgroundColor: `${stat.color}20`, color: stat.color }}
-            >
+            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center border-2 border-[var(--ink)] bg-[var(--ink)] text-[var(--paper)] group-hover:scale-110 transition-transform">
               {stat.icon}
             </div>
-            <p className="text-xs text-white/50 mb-1">{stat.label}</p>
-            <p className="text-xl font-bold text-white/90">{stat.value}</p>
-            <p className="text-xs text-white/40 mt-1">{stat.description}</p>
+            <p className="mb-1 font-[var(--font-mono)] text-xs uppercase tracking-wider text-[var(--ink-muted)]">
+              {stat.label}
+            </p>
+            <p className="text-xl font-bold font-[var(--font-mono)] text-[var(--ink)]">{stat.value}</p>
+            <p className="mt-1 text-xs text-[var(--ink-faint)]">{stat.description}</p>
           </motion.div>
         ))}
       </motion.div>
 
       {/* Aura Velocity Graph */}
       <motion.div variants={item}>
-        <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <TrendingUp className="w-6 h-6 text-cyan-400" />
-          Aura Velocity Journey
-        </h3>
-        <div className="glass rounded-2xl p-6">
+        <SectionHeader icon={<TrendingUp className="h-5 w-5" />} title="Aura Velocity Journey" />
+        <div className="sketch-card p-6">
           <AuraVelocityGraph velocity={auraVelocity} />
         </div>
       </motion.div>
 
       {/* Truth Matrix Table */}
       <motion.div variants={item}>
-        <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <Heart className="w-6 h-6 text-pink-400" />
-          Truth Matrix Analysis
-        </h3>
-        <div className="glass rounded-2xl p-6">
+        <SectionHeader icon={<Heart className="h-5 w-5" />} title="Truth Matrix Analysis" />
+        <div className="sketch-card p-6">
           <TruthMatrixTable truthMatrix={truthMatrix} />
         </div>
       </motion.div>
 
       {/* Score Breakdown */}
       <motion.div variants={item}>
-        <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <Trophy className="w-6 h-6 text-yellow-400" />
-          Score Breakdown
-        </h3>
-        <div className="glass rounded-2xl p-6">
+        <SectionHeader icon={<Trophy className="h-5 w-5" />} title="Score Breakdown" />
+        <div className="sketch-card p-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-4 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
-              <p className="text-sm text-cyan-400 mb-1">Presence (α)</p>
-              <p className="text-2xl font-bold text-white">+{Math.round(breakdown.presenceBonus)}</p>
+            <div className="sketch-card-thin p-4 text-center">
+              <p className="mb-1 font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">PRESENCE</p>
+              <p className="text-2xl font-bold font-[var(--font-mono)] text-[var(--ink)]">+{Math.round(breakdown.presenceBonus)}</p>
             </div>
-            <div className="text-center p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-              <p className="text-sm text-purple-400 mb-1">Composure (β)</p>
-              <p className="text-2xl font-bold text-white">+{Math.round(breakdown.composureBonus)}</p>
+            <div className="sketch-card-thin p-4 text-center">
+              <p className="mb-1 font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">COMPOSURE</p>
+              <p className="text-2xl font-bold font-[var(--font-mono)] text-[var(--ink)]">+{Math.round(breakdown.composureBonus)}</p>
             </div>
-            <div className="text-center p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-              <p className="text-sm text-green-400 mb-1">Fluidity (γ)</p>
-              <p className="text-2xl font-bold text-white">+{Math.round(breakdown.fluidityBonus)}</p>
+            <div className="sketch-card-thin p-4 text-center">
+              <p className="mb-1 font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">FLUIDITY</p>
+              <p className="text-2xl font-bold font-[var(--font-mono)] text-[var(--ink)]">+{Math.round(breakdown.fluidityBonus)}</p>
             </div>
-            <div className="text-center p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-              <p className="text-sm text-amber-400 mb-1">Streak Multiplier</p>
-              <p className="text-2xl font-bold text-white">×{breakdown.streakMultiplier.toFixed(2)}</p>
+            <div className="sketch-card-thin p-4 text-center">
+              <p className="mb-1 font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">STREAK MULTIPLIER</p>
+              <p className="text-2xl font-bold font-[var(--font-mono)] text-[var(--ink)]">×{breakdown.streakMultiplier.toFixed(2)}</p>
             </div>
           </div>
-          <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+          <div className="sketch-card-thin mt-4 p-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-red-400">Inauthenticity Tax</span>
-              <span className="text-lg font-bold text-red-400">-{Math.round(breakdown.inauthenticityTax)}</span>
+              <span className="font-[var(--font-mono)] text-sm font-bold text-[var(--ink)]">INAUTHENTICITY TAX</span>
+              <span className="text-lg font-bold font-[var(--font-mono)] text-[var(--ink)]">-{Math.round(breakdown.inauthenticityTax)}</span>
             </div>
           </div>
         </div>
       </motion.div>
 
       {/* Narrative */}
-      <motion.div variants={item} className="glass-strong rounded-2xl p-8 text-center">
-        <div className="text-6xl mb-4">{tierInfo.emoji}</div>
-        <h3 className="text-3xl font-bold mb-4 flex items-center justify-center gap-3">
-          <Crown className="w-8 h-8 text-yellow-400" />
-          Your Aura Narrative
-        </h3>
-        <p className="text-white/70 leading-relaxed max-w-3xl mx-auto italic text-lg">
+      <motion.div variants={item} className="sketch-card p-8 text-center">
+        <div className="mb-4 text-6xl">{tierInfo.emoji}</div>
+        <SectionHeader icon={<Crown className="h-6 w-6" />} title="Your Aura Narrative" />
+        <p className="mx-auto max-w-3xl font-[var(--font-display)] text-lg italic leading-relaxed text-[var(--ink-soft)]">
           &ldquo;{tierInfo.narrative}&rdquo;
         </p>
       </motion.div>
 
       {/* Response Pattern */}
-      <motion.div variants={item} className="glass rounded-2xl p-8 text-center">
-        <div className="text-5xl mb-4">{responsePattern.icon}</div>
-        <h4 className="text-2xl font-bold text-white/90 mb-3 capitalize">
+      <motion.div variants={item} className="sketch-card-thin p-8 text-center">
+        <div className="mb-4 text-5xl">{responsePattern.icon}</div>
+        <h4 className="mb-3 font-[var(--font-display)] text-2xl font-black uppercase text-[var(--ink)]">
           {responsePattern.pattern} Response Pattern
         </h4>
-        <p className="text-lg text-white/60 max-w-lg mx-auto">
+        <p className="mx-auto max-w-lg text-lg text-[var(--ink-soft)]">
           {responsePattern.description}
         </p>
       </motion.div>
@@ -737,13 +702,13 @@ export function AuraResultsDashboard({
       >
         <motion.button
           onClick={onRestart}
-          className="px-10 py-5 rounded-2xl font-bold text-lg text-white bg-gradient-to-r from-orange-500 to-red-500 inline-flex items-center gap-3 border-2 border-orange-400/50"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="sketch-btn"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           aria-label="Retake the aura test"
         >
-          <RotateCcw className="w-6 h-6" />
-          Retake Test
+          <RotateCcw className="h-6 w-6" />
+          RETAKE TEST
         </motion.button>
 
         <motion.button
@@ -757,13 +722,13 @@ export function AuraResultsDashboard({
             a.click();
             URL.revokeObjectURL(url);
           }}
-          className="glass px-8 py-5 rounded-2xl font-semibold text-white/70 hover:text-white inline-flex items-center gap-3 transition-colors border border-white/10"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="sketch-btn sketch-btn-outline"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           aria-label="Export aura results as JSON"
         >
-          <Download className="w-6 h-6" />
-          Export Results
+          <Download className="h-6 w-6" />
+          EXPORT RESULTS
         </motion.button>
 
         <motion.button
@@ -791,13 +756,13 @@ export function AuraResultsDashboard({
               }
             }
           }}
-          className="glass px-8 py-5 rounded-2xl font-semibold text-white/70 hover:text-white inline-flex items-center gap-3 transition-colors border border-white/10"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="sketch-btn sketch-btn-outline"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
           aria-label="Share your aura result"
         >
-          <Share2 className="w-6 h-6" />
-          Share
+          <Share2 className="h-6 w-6" />
+          SHARE
         </motion.button>
       </motion.div>
     </motion.div>

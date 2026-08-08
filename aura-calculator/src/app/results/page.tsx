@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
@@ -16,10 +16,12 @@ const AuraResultsDashboard = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)] paper-grain">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/50">Loading your aura results...</p>
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[var(--ink)] border-t-transparent" />
+          <p className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
+            LOADING YOUR AURA RESULTS...
+          </p>
         </div>
       </div>
     ),
@@ -32,7 +34,7 @@ const CosmicScene = dynamic(
     import("@/components3d/CosmicScene").then((mod) => ({
       default: mod.CosmicScene,
     })),
-  { ssr: false, loading: () => <div className="fixed inset-0 -z-10 bg-black" /> }
+  { ssr: false, loading: () => <div className="fixed inset-0 -z-10 bg-[var(--paper)]" /> }
 );
 
 type StoredResults = {
@@ -50,6 +52,14 @@ type StoredResults = {
 };
 
 export default function ResultsPage() {
+  return (
+    <Suspense>
+      <ResultsPageInner />
+    </Suspense>
+  );
+}
+
+function ResultsPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [results, setResults] = useState<StoredResults | null>(null);
@@ -128,10 +138,12 @@ export default function ResultsPage() {
 
   if (loading || !results) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)] paper-grain">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-white/50">Loading your aura results...</p>
+          <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[var(--ink)] border-t-transparent" />
+          <p className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
+            LOADING YOUR AURA RESULTS...
+          </p>
         </div>
       </div>
     );
@@ -147,15 +159,15 @@ export default function ResultsPage() {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="mb-6 md:mb-8 max-w-5xl mx-auto"
+          className="mb-6 md:mb-8 max-w-5xl mx-auto relative z-10"
         >
           <button
             onClick={handleRestart}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl glass text-white/60 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500/50"
+            className="sketch-btn sketch-btn-outline text-sm"
             aria-label="Back to home"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
+            <ArrowLeft className="h-4 w-4" />
+            BACK TO HOME
           </button>
         </motion.div>
 
@@ -164,17 +176,17 @@ export default function ResultsPage() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="max-w-5xl mx-auto mb-6">
-            <div className="flex items-center gap-3 px-5 py-3 rounded-xl border border-cyan-500/30 bg-cyan-500/10">
-              <AlertTriangle className="w-5 h-5 text-cyan-400 shrink-0" />
-              <p className="text-sm text-cyan-300">
+            className="max-w-5xl mx-auto mb-6 relative z-10">
+            <div className="sketch-card-thin flex items-center gap-3 px-5 py-3">
+              <AlertTriangle className="h-5 w-5 text-[var(--ink)] shrink-0" />
+              <p className="text-sm text-[var(--ink-soft)]">
                 You&apos;re viewing a <strong>shared result</strong>. Take the test yourself to get your own aura score!
               </p>
               <button
                 onClick={handleRestart}
-                className="ml-auto px-4 py-2 rounded-lg bg-cyan-500/20 text-cyan-300 text-sm font-bold hover:bg-cyan-500/30 transition-colors shrink-0"
+                className="sketch-btn ml-auto px-4 py-2 text-sm shrink-0"
               >
-                Take Test
+                TAKE TEST
               </button>
             </div>
           </motion.div>
