@@ -5,7 +5,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const CosmicScene = dynamic(
   () => import("@/components3d/CosmicScene").then((mod) => ({ default: mod.CosmicScene })),
-  { ssr: false, loading: () => <div className="fixed inset-0 -z-10 bg-black" /> }
+  { ssr: false, loading: () => <div className="fixed inset-0 -z-10 bg-[var(--paper)]" /> }
 );
 
 const QuickCheckResults = dynamic(
@@ -13,8 +13,8 @@ const QuickCheckResults = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
+      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)] paper-grain">
+        <div className="mx-auto mb-4 h-16 w-16 animate-spin rounded-full border-4 border-[var(--ink)] border-t-transparent" />
       </div>
     ),
   }
