@@ -1,0 +1,4 @@
+# Co-authors used by scripts/co-author.sh
+# One per line: Name <email>
+# Copy this file to .coauthors (which is gitignored) and fill in your own.
+opencode <opencode@anomaly.co>
