@@ -83,6 +83,7 @@ export function MotionProvider({ children }: { children: ReactNode }) {
             duration: 0.9,
             ease: "power4.out",
             stagger: 0.055,
+            clearProps: "transform,filter",
             scrollTrigger: { trigger: element, start: "top 82%", once: true },
           }
         );
@@ -102,6 +103,7 @@ export function MotionProvider({ children }: { children: ReactNode }) {
             duration: 0.95,
             ease: "power4.out",
             stagger: 0.075,
+            clearProps: "transform,filter",
             scrollTrigger: { trigger: group, start: "top 82%", once: true },
           }
         );
@@ -121,6 +123,7 @@ export function MotionProvider({ children }: { children: ReactNode }) {
               duration: 0.9,
               ease: "power4.out",
               delay: Number(element.dataset.revealDelay || 0),
+              clearProps: "transform,filter",
               scrollTrigger: { trigger: element, start: "top 84%", once: true },
             }
           );

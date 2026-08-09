@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { AnimeCharacter } from "@/components/Anime/AnimeCharacters";
 
 const ROLES = [
@@ -60,12 +59,7 @@ export function RolesSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 text-center"
-        >
+        <div data-reveal="blur-in" className="mb-20 text-center">
           <span className="stamp mb-6">THE 5 TIERS</span>
           <h2 className="mt-6 font-[var(--font-display)] text-5xl font-black uppercase sm:text-6xl">
             <span className="sketch-underline">Where do you stand?</span>
@@ -73,19 +67,15 @@ export function RolesSection() {
           <p className="mx-auto mt-6 max-w-2xl font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
             YOUR AURA SCORE DETERMINES YOUR TIER. THERE ARE NO PARTICIPATION TROPHIES HERE.
           </p>
-        </motion.div>
+        </div>
 
         {/* Tier cards */}
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+        <div data-reveal-group className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
           {ROLES.map((role, index) => (
-            <motion.div
+            <div
               key={role.tier}
-              initial={{ opacity: 0, y: 40, rotate: index % 2 === 0 ? -1 : 1 }}
-              whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1, type: "spring", stiffness: 120 }}
-              whileHover={{ y: -8, rotate: 0 }}
-              className={`sketch-card relative p-6 ${index === 0 ? "tilt-l" : ""}`}
+              data-reveal-item
+              className={`sketch-card relative p-6 transition-transform duration-300 hover:-translate-y-2 ${index === 0 ? "tilt-l" : ""}`}
             >
               {/* Character bust */}
               <div className="mb-2 flex justify-center">
@@ -128,14 +118,12 @@ export function RolesSection() {
                   </span>
                 ))}
               </div>
-            </motion.div>
+            </div>
           ))}
 
           {/* Spacer card for balanced grid */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
+          <div
+            data-reveal-item
             className="hidden items-center justify-center border-2 border-dashed border-[var(--ink-line-faint)] p-6 lg:flex"
           >
             <p className="text-center font-[var(--font-mono)] text-sm text-[var(--ink-faint)]">
@@ -143,7 +131,7 @@ export function RolesSection() {
               <br />
               <span className="font-bold">PERMANENTLY RECORDED</span>
             </p>
-          </motion.div>
+          </div>
         </div>
       </div>
     </section>
