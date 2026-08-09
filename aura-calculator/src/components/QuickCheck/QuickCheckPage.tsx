@@ -246,8 +246,8 @@ export function QuickCheckPage() {
           <Zap className="h-4 w-4 text-[var(--ink)]" />
           <span className="text-xs text-[var(--ink-muted)]">STREAK:</span>
           <span className="text-sm font-bold text-[var(--ink)]">{streak}x</span>
-          {bestStreak > 0 && (
-            <span className="text-xs text-[var(--ink-faint)]">({bestStreak} BEST)</span>
+          {bestStreakRef.current > 0 && (
+            <span className="text-xs text-[var(--ink-faint)]">({bestStreakRef.current} BEST)</span>
           )}
         </div>
       </motion.div>
