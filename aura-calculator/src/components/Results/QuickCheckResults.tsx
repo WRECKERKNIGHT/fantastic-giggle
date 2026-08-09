@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { RotateCcw, Share2, ArrowLeft, Sparkles, Zap } from "lucide-react";
 import { QuickCharacter, QUICK_CHARACTERS } from "@/lib/quickQuestions";
 import { CHARACTER_AVATARS } from "@/components/QuickCheck/CharacterAvatars";
+import { smoothScrollTo } from "@/lib/scroll";
 
 type StoredResult = {
   character: QuickCharacter;
@@ -70,7 +71,7 @@ export function QuickCheckResults() {
       router.push("/");
     }
     setLoading(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    smoothScrollTo(0);
   }, [router]);
 
   const handleRestart = () => {

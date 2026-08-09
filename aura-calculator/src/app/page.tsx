@@ -12,6 +12,7 @@ import { Footer } from "@/components/Homepage/Footer";
 import { DangerousLoadingScreen } from "@/components/Loading/DangerousLoadingScreen";
 import { QuizPage } from "@/components/Quiz/QuizPage";
 import { CosmicScene } from "@/components3d/CosmicScene";
+import { smoothScrollTo } from "@/lib/scroll";
 
 type AppPhase = "home" | "loading" | "quiz";
 
@@ -21,7 +22,7 @@ export default function Home() {
 
   const handleStartQuiz = useCallback(() => {
     setPhase("loading");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    smoothScrollTo(0);
   }, []);
 
   const handleQuickCheck = useCallback(() => {
@@ -30,7 +31,7 @@ export default function Home() {
 
   const handleLoadingComplete = useCallback(() => {
     setPhase("quiz");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    smoothScrollTo(0);
   }, []);
 
   // Scroll to top on phase changes (skip initial mount)
@@ -40,7 +41,7 @@ export default function Home() {
       isFirstRender.current = false;
       return;
     }
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    smoothScrollTo(0);
   }, [phase]);
 
   return (

@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { TIERS, AuraTier } from "@/lib/questions-new";
+import { smoothScrollTo } from "@/lib/scroll";
 
 // Dynamic import for heavy 3D results
 const AuraResultsDashboard = dynamic(
@@ -67,7 +68,7 @@ function ResultsPageInner() {
 
   // Scroll to top on mount
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    smoothScrollTo(0);
   }, []);
 
   useEffect(() => {
