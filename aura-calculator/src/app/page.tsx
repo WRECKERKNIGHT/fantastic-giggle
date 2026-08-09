@@ -8,6 +8,7 @@ import { RolesSection } from "@/components/Homepage/RolesSection";
 import { WhatYoullDoSection } from "@/components/Homepage/WhatYoullDoSection";
 import { DontLieSection } from "@/components/Homepage/DontLieSection";
 import { HowItWorksSection } from "@/components/Homepage/HowItWorksSection";
+import { AuraIntelligenceSection } from "@/components/Homepage/AuraIntelligenceSection";
 import { Footer } from "@/components/Homepage/Footer";
 import { DangerousLoadingScreen } from "@/components/Loading/DangerousLoadingScreen";
 import { QuizPage } from "@/components/Quiz/QuizPage";
@@ -56,6 +57,7 @@ export default function Home() {
           <RolesSection />
           <WhatYoullDoSection />
           <DontLieSection />
+          <AuraIntelligenceSection />
           <HowItWorksSection />
           <Footer />
         </main>
