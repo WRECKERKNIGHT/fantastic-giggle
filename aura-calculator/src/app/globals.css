@@ -382,6 +382,33 @@ body {
   animation: breathe 3s ease-in-out infinite;
 }
 
+/* ===== INFINITE INK MARQUEE ===== */
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+.marquee-track {
+  animation: marquee-scroll var(--marquee-speed, 26s) linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+.marquee-reverse .marquee-track {
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+  .marquee {
+    overflow-x: auto;
+  }
+}
+
 /* ===== RESULTS CONFETTI ===== */
 @keyframes confetti-fall {
   0% {

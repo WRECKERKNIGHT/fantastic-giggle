@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HeroSection } from "@/components/Homepage/HeroSection";
+import { MarqueeStrip } from "@/components/Homepage/MarqueeStrip";
 import { RolesSection } from "@/components/Homepage/RolesSection";
 import { WhatYoullDoSection } from "@/components/Homepage/WhatYoullDoSection";
 import { DontLieSection } from "@/components/Homepage/DontLieSection";
@@ -53,10 +54,12 @@ export default function Home() {
       {phase === "home" && (
         <main>
           <HeroSection onStart={handleStartQuiz} onQuickCheck={handleQuickCheck} />
+          <MarqueeStrip variant="top" />
           <RolesSection />
           <WhatYoullDoSection />
           <DontLieSection />
           <HowItWorksSection />
+          <MarqueeStrip variant="bottom" />
           <Footer />
         </main>
       )}
