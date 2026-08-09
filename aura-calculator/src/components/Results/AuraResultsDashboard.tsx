@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/purity -- confetti particles use Math.random() for visual variety */
 "use client";
 
-import { useRef, Suspense } from "react";
-import { motion } from "framer-motion";
+import { useRef, useEffect, useState, useMemo, Suspense } from "react";
+import { motion, animate, useInView } from "framer-motion";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Sparkles, Float } from "@react-three/drei";
 import * as THREE from "three";
@@ -63,6 +64,61 @@ type ResultsProps = {
 
 const INK = "#14110c";
 const PAPER = "#fbfaf6";
+
+// ===== COUNT-UP SCORE =====
+function CountUp({ value, duration = 2 }: { value: number; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const controls = animate(0, value, {
+      duration,
+      ease: [0.16, 1, 0.3, 1],
+      onUpdate: (v) => setDisplay(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [inView, value, duration]);
+
+  return <span ref={ref}>{display.toLocaleString()}</span>;
+}
+
+// ===== CONFETTI BURST (monochrome ink) =====
+const CONFETTI_COLORS = [INK, "#3d382f", "#6f685c", "#a49b8a", "#ece8df", "#14110c"];
+
+function Confetti() {
+  const pieces = useMemo(
+    () =>
+      Array.from({ length: 70 }, (_, i) => ({
+        left: Math.random() * 100,
+        width: 5 + Math.random() * 6,
+        height: 8 + Math.random() * 8,
+        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+        duration: 2.4 + Math.random() * 2,
+        delay: Math.random() * 0.9,
+      })),
+    []
+  );
+  return (
+    <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden" aria-hidden>
+      {pieces.map((p, i) => (
+        <span
+          key={i}
+          className="absolute top-0 rounded-sm"
+          style={{
+            left: `${p.left}%`,
+            width: `${p.width}px`,
+            height: `${p.height}px`,
+            backgroundColor: p.color,
+            opacity: 0,
+            animation: `confetti-fall ${p.duration}s cubic-bezier(0.16, 1, 0.3, 1) ${p.delay}s forwards`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 // ===== 3D AURA ORB =====
 function AuraOrb3D({ color, intensity }: { color: string; intensity: number }) {
@@ -456,6 +512,7 @@ export function AuraResultsDashboard({
   onRestart,
 }: ResultsProps) {
   const tierInfo = TIERS[tier];
+  const [copied, setCopied] = useState(false);
 
   // Truth score calculation
   const truthScore = truthMatrix.length > 0
@@ -491,6 +548,7 @@ export function AuraResultsDashboard({
       animate="show"
       className="space-y-8 max-w-6xl mx-auto px-4 relative z-10"
     >
+      <Confetti />
       {/* Tier Header with Anime Character */}
       <motion.div variants={item} className="text-center">
         <motion.div
@@ -537,7 +595,7 @@ export function AuraResultsDashboard({
                 }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                {score.toLocaleString()}
+                <CountUp value={score} />
               </motion.span>
             </div>
           </div>
@@ -745,12 +803,14 @@ export function AuraResultsDashboard({
                 await navigator.clipboard.writeText(
                   `${shareData.text}\n${shareData.url}`
                 );
-                alert("Result copied to clipboard!");
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
               }
             } catch {
               try {
                 await navigator.clipboard.writeText(window.location.href);
-                alert("Link copied to clipboard!");
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
               } catch {
                 // Final fallback
               }
@@ -762,7 +822,7 @@ export function AuraResultsDashboard({
           aria-label="Share your aura result"
         >
           <Share2 className="h-6 w-6" />
-          SHARE
+          {copied ? "COPIED!" : "SHARE"}
         </motion.button>
       </motion.div>
     </motion.div>
