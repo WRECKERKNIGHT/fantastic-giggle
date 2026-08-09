@@ -18,6 +18,7 @@ import {
   trackAuraVelocity,
   getCurrentPhase,
 } from "@/lib/truthMatrix";
+import { smoothScrollTo } from "@/lib/scroll";
 import {
   Eye,
   Zap,
@@ -365,7 +366,7 @@ export function QuizPage() {
     setShowDisclaimer(false);
     setQuizStarted(true);
     setQuestionStartTime(Date.now());
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    smoothScrollTo(0);
   };
 
   const phaseMeta = (() => {

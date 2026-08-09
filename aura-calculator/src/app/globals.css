@@ -40,7 +40,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* Smooth scrolling is handled by Lenis (see components/SmoothScroll.tsx) */
   overflow-x: hidden;
 }
 
