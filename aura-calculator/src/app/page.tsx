@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HeroSection } from "@/components/Homepage/HeroSection";
 import { RolesSection } from "@/components/Homepage/RolesSection";
+import { TiersGauntletSection } from "@/components/Homepage/TiersGauntletSection";
 import { WhatYoullDoSection } from "@/components/Homepage/WhatYoullDoSection";
 import { DontLieSection } from "@/components/Homepage/DontLieSection";
 import { HowItWorksSection } from "@/components/Homepage/HowItWorksSection";
@@ -54,6 +55,7 @@ export default function Home() {
         <main>
           <HeroSection onStart={handleStartQuiz} onQuickCheck={handleQuickCheck} />
           <RolesSection />
+          <TiersGauntletSection />
           <WhatYoullDoSection />
           <DontLieSection />
           <HowItWorksSection />
