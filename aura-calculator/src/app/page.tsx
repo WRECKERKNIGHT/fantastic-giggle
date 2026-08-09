@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HeroSection } from "@/components/Homepage/HeroSection";
 import { RolesSection } from "@/components/Homepage/RolesSection";
@@ -13,6 +14,14 @@ import { DangerousLoadingScreen } from "@/components/Loading/DangerousLoadingScr
 import { QuizPage } from "@/components/Quiz/QuizPage";
 import { CosmicScene } from "@/components3d/CosmicScene";
 import { smoothScrollTo } from "@/lib/scroll";
+
+const CosmicAuraSection = dynamic(
+  () => import("@/components3d/CosmicAuraSection"),
+  {
+    ssr: false,
+    loading: () => <div className="h-[180vh]" aria-hidden="true" />,
+  }
+);
 
 type AppPhase = "home" | "loading" | "quiz";
 
@@ -56,6 +65,7 @@ export default function Home() {
           <RolesSection />
           <WhatYoullDoSection />
           <DontLieSection />
+          <CosmicAuraSection />
           <HowItWorksSection />
           <Footer />
         </main>
