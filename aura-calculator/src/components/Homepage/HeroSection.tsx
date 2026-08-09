@@ -168,6 +168,7 @@ export function HeroSection({
             className="sketch-btn text-lg"
             whileHover={{ rotate: -0.6 }}
             whileTap={{ scale: 0.97 }}
+            data-cursor-label="INITIATE"
           >
             <Swords className="h-6 w-6" />
             FULL 50-QUESTION EXAM
@@ -178,6 +179,7 @@ export function HeroSection({
             className="sketch-btn sketch-btn-outline text-lg"
             whileHover={{ rotate: 0.6 }}
             whileTap={{ scale: 0.97 }}
+            data-cursor-label="QUICK"
           >
             QUICK 10-QUESTION CHECK
           </motion.button>

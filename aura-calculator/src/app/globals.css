@@ -382,6 +382,23 @@ body {
   animation: breathe 3s ease-in-out infinite;
 }
 
+/* ===== INK CURSOR ===== */
+.ink-cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform;
+}
+
+@media (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .ink-cursor {
+    display: none;
+  }
+}
+
 /* ===== RESULTS CONFETTI ===== */
 @keyframes confetti-fall {
   0% {

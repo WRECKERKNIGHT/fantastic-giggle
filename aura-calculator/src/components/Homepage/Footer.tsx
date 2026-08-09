@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ExternalLink, Heart, ScanLine, Zap, Trophy } from "lucide-react";
 import Link from "next/link";
+import { GlitchText } from "@/components/GlitchText";
 
 export function Footer() {
   return (
@@ -73,7 +74,7 @@ export function Footer() {
             Engineered with psychometric precision
           </p>
           <p className="sketch-underline inline-block font-[var(--font-display)] text-2xl font-black text-[var(--ink)]">
-            Made by Harshit Mishra
+            <GlitchText text="Made by Harshit Mishra" />
           </p>
         </motion.div>
 
