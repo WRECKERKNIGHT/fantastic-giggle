@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ExternalLink, Heart } from "lucide-react";
+import { ExternalLink, Heart, ScanLine, Zap, Trophy } from "lucide-react";
+import Link from "next/link";
 
 export function Footer() {
   return (
@@ -32,6 +33,33 @@ export function Footer() {
           <p className="font-[var(--font-mono)] text-xs uppercase tracking-widest text-[var(--ink-muted)]">
             The most dangerous personality test on the internet.
           </p>
+        </motion.div>
+
+        {/* Nav links */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-8 flex flex-wrap items-center justify-center gap-3"
+        >
+          <Link
+            href="/quick-check"
+            className="sketch-card-thin inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-[var(--ink-soft)] hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
+          >
+            <Zap className="h-4 w-4" /> Quick Check
+          </Link>
+          <Link
+            href="/aura-scan"
+            className="sketch-card-thin inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-[var(--ink-soft)] hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
+          >
+            <ScanLine className="h-4 w-4" /> Aura Scan
+          </Link>
+          <Link
+            href="/results"
+            className="sketch-card-thin inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-[var(--ink-soft)] hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
+          >
+            <Trophy className="h-4 w-4" /> My Results
+          </Link>
         </motion.div>
 
         {/* Made by */}

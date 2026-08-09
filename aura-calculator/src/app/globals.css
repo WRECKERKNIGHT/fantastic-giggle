@@ -348,3 +348,36 @@ body {
 /* ===== UTILITY ===== */
 .tilt-l { transform: rotate(-0.6deg); }
 .tilt-r { transform: rotate(0.6deg); }
+
+/* ===== AURA SCAN BEAM ===== */
+@keyframes scan-beam {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(224px);
+    opacity: 0;
+  }
+}
+
+.animate-scan-beam {
+  top: 0;
+  animation: scan-beam 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===== AURA ORB BREATH ===== */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.12); opacity: 0.9; }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
