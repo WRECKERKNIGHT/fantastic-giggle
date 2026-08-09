@@ -3,6 +3,7 @@ import { Playfair_Display, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { CursorGlow } from "@/components/CursorGlow";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -83,6 +84,7 @@ export default function RootLayout({
         </svg>
         <SmoothScroll>
           <ScrollProgress />
+          <CursorGlow />
           {children}
         </SmoothScroll>
       </body>
