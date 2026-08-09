@@ -8,6 +8,10 @@ export function setLenisInstance(instance: Lenis | null) {
   lenis = instance;
 }
 
+export function getLenisInstance() {
+  return lenis;
+}
+
 export function smoothScrollTo(
   target: number | string | HTMLElement,
   options?: { duration?: number }
