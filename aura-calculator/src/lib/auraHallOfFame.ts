@@ -2,7 +2,7 @@
 
 export type FameEntry = {
   id: string;
-  mode: "full" | "quick";
+  mode: "full" | "quick" | "scan";
   tier: string;
   emoji: string;
   label: string;

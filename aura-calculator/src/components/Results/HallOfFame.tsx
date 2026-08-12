@@ -31,10 +31,14 @@ function ModeBadge({ mode }: { mode: FameEntry["mode"] }) {
   return (
     <span
       className={`px-2 py-0.5 font-[var(--font-mono)] text-[10px] font-bold tracking-widest ${
-        mode === "full" ? "bg-[var(--ink)] text-[var(--paper)]" : "border border-[var(--ink)] text-[var(--ink)]"
+        mode === "full"
+          ? "bg-[var(--ink)] text-[var(--paper)]"
+          : mode === "quick"
+            ? "border border-[var(--ink)] text-[var(--ink)]"
+            : "border border-dashed border-[var(--ink)] text-[var(--ink)]"
       }`}
     >
-      {mode === "full" ? "EXAM" : "QUICK"}
+      {mode === "full" ? "EXAM" : mode === "quick" ? "QUICK" : "SCAN"}
     </span>
   );
 }

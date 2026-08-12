@@ -9,6 +9,8 @@ export type AuraReading = {
   brightness: number;
   warmth: number;
   saturation: number;
+  stability: number;
+  spectrum: { hue: number; weight: number; color: string }[];
   elements: string[];
   strengths: string[];
   weaknesses: string[];
@@ -139,6 +141,7 @@ export async function analyzeImage(file: File | Blob): Promise<AuraReading> {
   let sumB = 0;
   let sumSat = 0;
   let sumLight = 0;
+  let variance = 0;
   let count = 0;
   const hueBuckets = new Map<number, number>();
   let hash = 7;
@@ -164,6 +167,13 @@ export async function analyzeImage(file: File | Blob): Promise<AuraReading> {
   const avgB = sumB / count;
   const brightness = sumLight / count;
   const saturation = sumSat / count;
+
+  for (let i = 0; i < data.length; i += 4) {
+    const { l } = rgbToHsl({ r: data[i], g: data[i + 1], b: data[i + 2] });
+    variance += (l - brightness) * (l - brightness);
+  }
+  const stddev = Math.sqrt(variance / count);
+  const stability = Math.max(0, Math.min(1, 1 - stddev * 1.6));
 
   // Dominant hue bucket
   let dominantBucket = 0;
@@ -199,6 +209,16 @@ export async function analyzeImage(file: File | Blob): Promise<AuraReading> {
     return out;
   };
 
+  // Spectral readout: dominant hue bands, normalized and rendered as colors
+  const spectrum = [...hueBuckets.entries()]
+    .map(([bucket, hits]) => ({
+      hue: bucket + 20,
+      weight: hits / count,
+      color: hslToHex({ h: bucket + 20, s: 0.7, l: 0.55 }),
+    }))
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 6);
+
   return {
     chadPoints,
     auraColor,
@@ -207,6 +227,8 @@ export async function analyzeImage(file: File | Blob): Promise<AuraReading> {
     brightness,
     warmth: Math.max(-1, Math.min(1, warmthScore)),
     saturation,
+    stability,
+    spectrum,
     elements: pick(ELEMENT_POOL, 3),
     strengths: pick(STRENGTH_POOL, 3),
     weaknesses: pick(WEAKNESS_POOL, 2),

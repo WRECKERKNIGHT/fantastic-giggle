@@ -5,8 +5,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Upload, ScanLine, RefreshCw, Share2, Check, X, Camera, Video, Aperture } from "lucide-react";
+import { ArrowLeft, Upload, ScanLine, RefreshCw, Share2, Check, X, Camera, Video, Aperture, ImageDown } from "lucide-react";
 import { analyzeImage, AuraReading } from "@/lib/auraScan";
+import { saveAuraEntry } from "@/lib/auraHallOfFame";
+import { downloadAuraShareCard } from "@/lib/auraShareCard";
 
 type Phase = "upload" | "scanning" | "result";
 
@@ -14,6 +16,7 @@ const METERS = [
   { key: "energy" as const, label: "AURA ENERGY" },
   { key: "saturation" as const, label: "VIBRANCY" },
   { key: "brightness" as const, label: "PRESENCE" },
+  { key: "stability" as const, label: "STABILITY" },
 ];
 
 export function AuraScanPage() {
@@ -39,6 +42,22 @@ export function AuraScanPage() {
       streamRef.current = null;
     };
   }, []);
+
+  // Log completed readings to the Hall of Fame once
+  const savedScanRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (phase !== "result" || !reading) return;
+    const key = `${reading.seed}-${reading.chadPoints}`;
+    if (savedScanRef.current === key) return;
+    savedScanRef.current = key;
+    saveAuraEntry({
+      mode: "scan",
+      tier: reading.auraName,
+      emoji: reading.elements[0] || "👁️",
+      label: reading.auraName,
+      score: reading.chadPoints,
+    });
+  }, [phase, reading]);
 
   const startCamera = useCallback(async () => {
     setError(null);
@@ -430,7 +449,7 @@ export function AuraScanPage() {
               </motion.div>
 
               {/* Meters */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
                 {METERS.map((meter, i) => (
                   <motion.div
                     key={meter.key}
@@ -458,6 +477,50 @@ export function AuraScanPage() {
                   </motion.div>
                 ))}
               </div>
+
+              {/* Spectral readout */}
+              {reading.spectrum.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 1.5 }}
+                  className="sketch-card p-6"
+                >
+                  <div className="mb-4 flex items-center justify-between">
+                    <h3 className="font-[var(--font-mono)] text-sm font-bold tracking-widest text-[var(--ink)]">
+                      SPECTRAL READOUT
+                    </h3>
+                    <span className="font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
+                      DOMINANT WAVELENGTHS
+                    </span>
+                  </div>
+                  <div className="space-y-3">
+                    {reading.spectrum.map((band, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <span
+                          className="h-4 w-4 shrink-0 rounded-full border border-[var(--ink-line)]"
+                          style={{ backgroundColor: band.color }}
+                        />
+                        <span className="w-16 shrink-0 font-[var(--font-mono)] text-xs font-bold text-[var(--ink)]">
+                          {Math.round(band.hue)}°
+                        </span>
+                        <div className="meter-track flex-1">
+                          <motion.div
+                            className="meter-fill"
+                            style={{ backgroundColor: band.color }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${band.weight * 100}%` }}
+                            transition={{ delay: 1.6 + i * 0.08, duration: 0.6, ease: "easeOut" }}
+                          />
+                        </div>
+                        <span className="w-10 shrink-0 text-right font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
+                          {Math.round(band.weight * 100)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
 
               {/* Strengths / Weaknesses */}
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -504,6 +567,27 @@ export function AuraScanPage() {
                   className="sketch-btn flex-1"
                 >
                   <Share2 className="h-5 w-5" /> {copied ? "COPIED!" : "SHARE RESULT"}
+                </motion.button>
+                <motion.button
+                  onClick={async () => {
+                    try {
+                      await downloadAuraShareCard({
+                        score: reading.chadPoints,
+                        tierName: reading.auraName,
+                        emoji: reading.elements[0] || "👁️",
+                        color: reading.auraColor,
+                        mode: "scan",
+                        label: "CHAD POINTS",
+                      });
+                    } catch {
+                      // card generation unsupported — ignore
+                    }
+                  }}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
+                  className="sketch-btn flex-1"
+                >
+                  <ImageDown className="h-5 w-5" /> SAVE IMAGE
                 </motion.button>
                 <motion.button
                   onClick={reset}

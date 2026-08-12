@@ -11,7 +11,7 @@ export type ShareCardData = {
   tierName: string;
   emoji: string;
   color: string;
-  mode: "full" | "quick";
+  mode: "full" | "quick" | "scan";
   label?: string;
 };
 
@@ -155,7 +155,7 @@ export async function generateAuraShareCard(data: ShareCardData): Promise<string
   ctx.setLineDash([]);
   ctx.globalAlpha = 1;
 
-  drawStamp(ctx, data.mode === "full" ? "AURA EVALUATION" : "QUICK AURA CHECK", W / 2, 150);
+  drawStamp(ctx, data.mode === "full" ? "AURA EVALUATION" : data.mode === "scan" ? "AURA SCAN" : "QUICK AURA CHECK", W / 2, 150);
 
   // Emoji emblem
   ctx.font = "200px 'Arial Black', sans-serif";
@@ -222,7 +222,7 @@ export async function downloadAuraShareCard(data: ShareCardData): Promise<void> 
   const url = await generateAuraShareCard(data);
   const a = document.createElement("a");
   a.href = url;
-  a.download = data.mode === "full" ? "aura-share-card.png" : "aura-quick-card.png";
+  a.download = data.mode === "full" ? "aura-share-card.png" : data.mode === "scan" ? "aura-scan-card.png" : "aura-quick-card.png";
   document.body.appendChild(a);
   a.click();
   a.remove();
