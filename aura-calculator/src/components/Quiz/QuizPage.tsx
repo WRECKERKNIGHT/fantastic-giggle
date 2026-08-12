@@ -19,6 +19,7 @@ import {
   getCurrentPhase,
 } from "@/lib/truthMatrix";
 import { smoothScrollTo } from "@/lib/scroll";
+import { playSelect } from "@/lib/auraSound";
 import {
   Eye,
   Zap,
@@ -127,6 +128,10 @@ export function QuizPage() {
   currentQuestionRef.current = currentQuestion;
   const questionStartTimeRef = useRef(questionStartTime);
   questionStartTimeRef.current = questionStartTime;
+  const shuffledOptionsRef = useRef<number[]>([]);
+  shuffledOptionsRef.current = shuffledOptions;
+  const showCurveballRef = useRef(showCurveball);
+  showCurveballRef.current = showCurveball;
 
   const questions = REGULAR_QUESTIONS;
   const currentQ = useMemo(() => {
@@ -136,6 +141,8 @@ export function QuizPage() {
   const currentQRef = useRef<QuizQuestion | null>(null);
   currentQRef.current = currentQ;
   const phase = getCurrentPhase(currentQuestion);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
   const progress = ((currentQuestion + 1) / questions.length) * 100;
   const phaseInfo = PHASES[phase];
 
@@ -157,6 +164,7 @@ export function QuizPage() {
     (questionId: number, optionId: string) => {
       if (answeringRef.current) return;
       answeringRef.current = true;
+      playSelect();
 
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -243,6 +251,31 @@ export function QuizPage() {
 
   const handleAnswerRef = useRef(handleAnswer);
   handleAnswerRef.current = handleAnswer;
+
+  // ===== KEYBOARD ANSWERS (1-4) =====
+  useEffect(() => {
+    if (!quizStarted || showPhaseTransition || showDisclaimer) return;
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (phaseRef.current === 2) return; // Phase 2 chat handles its own keys
+      const index = parseInt(e.key, 10) - 1;
+      if (index < 0 || index > 3) return;
+      const q = currentQRef.current;
+      if (!q) return;
+      const order =
+        shuffledOptionsRef.current.length > 0
+          ? shuffledOptionsRef.current
+          : q.options.map((_, i) => i);
+      const option = q.options[order[index]];
+      if (!option) return;
+      e.preventDefault();
+      setSelectedOption(option.id);
+      handleAnswerRef.current(q.id, option.id);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [quizStarted, showPhaseTransition, showDisclaimer]);
 
   // Timer for Phase 5 (and curveball questions with timeLimitMs)
   useEffect(() => {
@@ -859,6 +892,7 @@ export function QuizPage() {
                     <span>INVOLUNTARY RESPONSES ARE BEING LOGGED.</span>
                   </>
                 )}
+                <span className="font-bold text-[var(--ink)]">PRESS 1-4 TO ANSWER</span>
               </motion.div>
             </motion.div>
           </AnimatePresence>

@@ -2,10 +2,10 @@
 /* eslint-disable @next/next/no-img-element -- local blob URLs can't use next/image */
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Upload, ScanLine, RefreshCw, Share2, Check, X, Camera } from "lucide-react";
+import { ArrowLeft, Upload, ScanLine, RefreshCw, Share2, Check, X, Camera, Video, Aperture } from "lucide-react";
 import { analyzeImage, AuraReading } from "@/lib/auraScan";
 
 type Phase = "upload" | "scanning" | "result";
@@ -27,6 +27,41 @@ export function AuraScanPage() {
   const [reading, setReading] = useState<AuraReading | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [cameraActive, setCameraActive] = useState(false);
+  const streamRef = useRef<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const captureCanvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Release the camera stream when the page unmounts
+  useEffect(() => {
+    return () => {
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    };
+  }, []);
+
+  const startCamera = useCallback(async () => {
+    setError(null);
+    try {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setError("Camera not supported in this browser. Upload a photo instead.");
+        return;
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      streamRef.current = stream;
+      setCameraActive(true);
+    } catch {
+      setError("Camera access denied. Grant permission or upload a photo instead.");
+    }
+  }, []);
+
+  const stopCamera = useCallback(() => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCameraActive(false);
+  }, []);
 
   const handleFile = useCallback((f: File | null | undefined) => {
     setError(null);
@@ -46,6 +81,26 @@ export function AuraScanPage() {
     setReading(null);
     setProgress(0);
   }, []);
+
+  const capturePhoto = useCallback(() => {
+    const video = videoRef.current;
+    const canvas = captureCanvasRef.current;
+    if (!video || !canvas || !streamRef.current) return;
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+    if (!width || !height) return;
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.drawImage(video, 0, 0, width, height);
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const file = new File([blob], "aura-snapshot.png", { type: "image/png" });
+      stopCamera();
+      handleFile(file);
+    }, "image/png");
+  }, [stopCamera, handleFile]);
 
   const handleScan = useCallback(async () => {
     if (!file) return;
@@ -230,6 +285,15 @@ export function AuraScanPage() {
                 }`}
               >
                 <ScanLine className="h-6 w-6" /> SCAN MY AURA
+              </motion.button>
+
+              <motion.button
+                onClick={startCamera}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="sketch-btn sketch-btn-outline w-full py-4 text-base"
+              >
+                <Video className="h-5 w-5" /> USE LIVE CAMERA
               </motion.button>
             </motion.div>
           )}
@@ -462,6 +526,63 @@ export function AuraScanPage() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* ===== LIVE CAMERA OVERLAY ===== */}
+      <AnimatePresence>
+        {cameraActive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex flex-col bg-[var(--ink)]"
+          >
+            <div className="flex items-center justify-between p-4">
+              <span className="stamp">LIVE CAMERA</span>
+              <button
+                onClick={stopCamera}
+                className="sketch-btn sketch-btn-outline text-sm text-[var(--paper)]"
+                aria-label="Close camera"
+              >
+                <X className="h-4 w-4" /> CANCEL
+              </button>
+            </div>
+
+            <div className="relative flex flex-1 items-center justify-center overflow-hidden p-4">
+              <video
+                ref={(el) => {
+                  videoRef.current = el;
+                  if (el && streamRef.current) {
+                    el.srcObject = streamRef.current;
+                  }
+                }}
+                autoPlay
+                playsInline
+                muted
+                className="max-h-full w-full object-contain"
+              />
+              <div className="pointer-events-none absolute inset-4 border-2 border-dashed border-[var(--paper)]/50" />
+              <div className="pointer-events-none absolute left-1/2 top-1/2 h-56 w-56 -translate-x-1/2 -translate-y-1/2 border-2 border-[var(--paper)]/70">
+                <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[var(--ink)] px-2 font-[var(--font-mono)] text-[10px] font-bold tracking-widest text-[var(--paper)]">
+                  CENTER YOUR AURA
+                </span>
+              </div>
+              <canvas ref={captureCanvasRef} className="hidden" />
+            </div>
+
+            <div className="flex items-center justify-center gap-6 p-6">
+              <motion.button
+                onClick={capturePhoto}
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.92 }}
+                className="flex h-20 w-20 items-center justify-center rounded-full border-4 border-[var(--paper)] bg-[var(--paper)] shadow-[0_0_0_6px_rgba(251,250,246,0.25)]"
+                aria-label="Capture photo"
+              >
+                <Aperture className="h-9 w-9 text-[var(--ink)]" />
+              </motion.button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

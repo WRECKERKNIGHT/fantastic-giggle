@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { QUICK_QUESTIONS, QUICK_CHARACTERS, QuickCharacter } from "@/lib/quickQuestions";
 import { Zap, Brain, Trophy, Swords } from "lucide-react";
+import { playSelect } from "@/lib/auraSound";
 
 function calculateQuickResult(answers: { questionId: number; optionId: string }[]) {
   const scores: Record<string, number> = {};
@@ -56,6 +57,7 @@ export function QuickCheckPage() {
     (questionId: number, optionId: string) => {
       if (answeringRef.current || pendingNavigationRef.current) return;
       answeringRef.current = true;
+      playSelect();
 
       const responseTimeMs = Date.now() - questionStartTime;
       const newAnswers = [...answers, { questionId, optionId }];
@@ -117,6 +119,24 @@ export function QuickCheckPage() {
       router.push("/quick-results");
     }
   }, [showResult, result, router]);
+
+  // ===== KEYBOARD ANSWERS (1-4) =====
+  useEffect(() => {
+    if (showIntro || showResult) return;
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      const index = parseInt(e.key, 10) - 1;
+      if (index < 0 || index >= currentQ.options.length) return;
+      const option = currentQ.options[index];
+      if (!option) return;
+      e.preventDefault();
+      setSelectedOption(option.id);
+      handleAnswer(currentQ.id, option.id);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [showIntro, showResult, currentQ, handleAnswer]);
 
   if (showResult && result) {
     return (
@@ -336,6 +356,7 @@ export function QuickCheckPage() {
             >
               <Brain className="h-4 w-4" />
               <span>INSTINCT VELOCITY IS BEING TRACKED. DON&apos;T OVERTHINK.</span>
+              <span className="ml-auto font-bold text-[var(--ink)]">PRESS 1-4</span>
             </motion.div>
           </motion.div>
         </AnimatePresence>
