@@ -52,6 +52,10 @@ const PRESSURE_EVENTS: PressureEvent[] = [
   { id: "reverseText1", type: "reverseText", duration: 1500, message: "REVERSE MODE", icon: "⇄" },
   { id: "glitch3", type: "glitch", duration: 500, message: "DATA CORRUPTION", icon: "◢" },
   { id: "shake2", type: "shake", duration: 400, message: "VIBRATION PULSE", icon: "≈" },
+  { id: "reverseText2", type: "reverseText", duration: 1200, message: "INVERTED PERCEPTION", icon: "⇄" },
+  { id: "speedUp2", type: "speedUp", duration: 1800, message: "CLOCK SHIFT", icon: "▶" },
+  { id: "distraction2", type: "distraction", duration: 1200, message: "NOISE FLOOD", icon: "◎" },
+  { id: "glitch4", type: "glitch", duration: 700, message: "MEMORY FRAGMENT", icon: "◢" },
 ];
 
 // ===== FISHER-YATES SHUFFLE =====
@@ -157,6 +161,8 @@ export function QuizPage() {
   const [curveballQuestion, setCurveballQuestion] = useState<QuizQuestion | null>(null);
   const [screenShake, setScreenShake] = useState(false);
   const [glitchIntensity, setGlitchIntensity] = useState(0);
+  const [reverseText, setReverseText] = useState(false);
+  const [distractionActive, setDistractionActive] = useState(false);
   const [scoreEstimate, setScoreEstimate] = useState(0);
   const [curveballCount, setCurveballCount] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -254,6 +260,8 @@ export function QuizPage() {
         setCurrentPressureEvent(null);
         setScreenShake(false);
         setGlitchIntensity(0);
+        setReverseText(false);
+        setDistractionActive(false);
       }
 
       // ===== CURVEBALL ANSWER: record it, then return to the real question =====
@@ -406,8 +414,11 @@ export function QuizPage() {
   useEffect(() => {
     if (!quizStarted || showPhaseTransition) return;
 
+    // Streaks attract the system's attention: escalation on hot runs
+    const streakEscalation = streak >= 3 ? 0.1 : 0;
+
     // Random pressure events
-    if (Math.random() < difficulty.pressureEventChance) {
+    if (Math.random() < difficulty.pressureEventChance + streakEscalation) {
       const randomEvent = PRESSURE_EVENTS[Math.floor(Math.random() * PRESSURE_EVENTS.length)];
       setCurrentPressureEvent(randomEvent);
 
@@ -421,8 +432,27 @@ export function QuizPage() {
         setTimeout(() => setGlitchIntensity(0), randomEvent.duration);
       }
 
+      if (randomEvent.type === "speedUp") {
+        // Real clock theft: eat half a second off the timer
+        setTimeLeft((prev) => (prev === null ? prev : Math.max(0.4, prev - 0.5)));
+      }
+
+      if (randomEvent.type === "reverseText") {
+        setReverseText(true);
+        setTimeout(() => setReverseText(false), randomEvent.duration);
+      }
+
+      if (randomEvent.type === "distraction") {
+        setDistractionActive(true);
+        setTimeout(() => setDistractionActive(false), randomEvent.duration);
+      }
+
       pressureEventTimeoutRef.current = setTimeout(() => {
         setCurrentPressureEvent(null);
+        setScreenShake(false);
+        setGlitchIntensity(0);
+        setReverseText(false);
+        setDistractionActive(false);
       }, randomEvent.duration);
     }
 
@@ -868,7 +898,7 @@ export function QuizPage() {
                 transition={{ delay: 0.15 }}
                 className="mb-6 font-[var(--font-display)] text-2xl font-bold text-[var(--ink)] md:text-3xl"
               >
-                {currentQ.text}
+                {reverseText ? currentQ.text.split("").reverse().join("") : currentQ.text}
               </motion.h2>
               {currentQ.subtext && (
                 <motion.p
@@ -882,7 +912,14 @@ export function QuizPage() {
               )}
 
               {/* ===== OPTIONS ===== */}
-              <div className={`space-y-3 ${shufflingOptions ? "animate-pulse" : ""}`}>
+              <div className={`relative space-y-3 ${shufflingOptions ? "animate-pulse" : ""}`}>
+                {distractionActive && (
+                  <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[var(--paper-card)]/60 backdrop-blur-[1px]">
+                    <span className="animate-pulse font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">
+                      FOCUS DISRUPTED
+                    </span>
+                  </div>
+                )}
                 {displayOrder.map((optionIndex, displayIndex) => {
                   const option = currentQ.options[optionIndex];
                   return (

@@ -67,6 +67,12 @@ export function checkConsistency(
     { tags1: ["honest_terrible", "brutal_honest"], tags2: ["nice_liar", "automatic_good"], penalty: 300 },
     // Calm vs Panic
     { tags1: ["calm_flicker", "heat_holder", "keep_running"], tags2: ["scream_runner", "heat_dropper", "existential_slip"], penalty: 450 },
+    // Caring vs Selfish
+    { tags1: ["caring_first", "immediate_helper", "proper_apologizer"], tags2: ["phone_first", "social_media_fear", "friend_filer"], penalty: 400 },
+    // Unbothered vs Try-hard
+    { tags1: ["unbothered", "dignity_walk", "laugh_it_off", "zip_own_it"], tags2: ["commitment", "double_flex", "chat_deflect", "pretender"], penalty: 350 },
+    // Honest ownership vs Cover-up
+    { tags1: ["own_it", "zip_own_it", "brutal_honest", "lock_smile"], tags2: ["fashion_pretend", "nice_liar", "born_ready", "line_balancer"], penalty: 350 },
   ];
 
   for (const contradiction of contradictions) {
@@ -170,8 +176,14 @@ export function calculateAuraScore(
     }
 
     if (honeypot.triggered) {
-      inauthenticityTax += honeypot.penalty;
+      // Hesitation-scaled trap penalty: biting a trap after a long
+      // deliberation is treated as performative (the cool answer was
+      // reached by thinking, not instinct).
+      const hesitationBonus = answer.responseTimeMs > 4000 ? 300 : 0;
+      inauthenticityTax += honeypot.penalty + hesitationBonus;
     }
+
+    const totalPenalty = honeypot.penalty + consistency.penalty;
 
     // Record truth matrix entry
     truthMatrix.push({
@@ -180,7 +192,7 @@ export function calculateAuraScore(
       instinctVelocity,
       isConsistent: consistency.isConsistent,
       honeypotTriggered: honeypot.triggered,
-      auraShift: instinctVelocity - honeypot.penalty - consistency.penalty,
+      auraShift: instinctVelocity - totalPenalty,
     });
 
     previousAnswers.push({
