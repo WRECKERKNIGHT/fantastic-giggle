@@ -7,7 +7,59 @@ import { QUICK_QUESTIONS, QUICK_CHARACTERS, QuickCharacter } from "@/lib/quickQu
 import { Zap, Brain, Trophy, Swords } from "lucide-react";
 import { playSelect } from "@/lib/auraSound";
 
-function calculateQuickResult(answers: { questionId: number; optionId: string }[]) {
+export type QuickAnswer = { questionId: number; optionId: string; responseTimeMs: number };
+
+export type QuickResponsePattern = {
+  pattern: string;
+  description: string;
+  icon: string;
+};
+
+export type QuickResult = {
+  character: QuickCharacter;
+  runnerUp: QuickCharacter | null;
+  margin: number;
+  allScores: Record<string, number>;
+  avgTime: number;
+  fastest: number;
+  responsePattern: QuickResponsePattern;
+};
+
+export function shuffleArray<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+// Deal a fresh question order AND option layout per run so no two
+// quick checks can be position-memorized.
+function buildQuickDeck() {
+  return shuffleArray(QUICK_QUESTIONS).map((q) => ({
+    ...q,
+    options: shuffleArray(q.options),
+  }));
+}
+
+function getResponsePattern(avgTime: number): QuickResponsePattern {
+  if (avgTime < 2000) {
+    return { pattern: "instant", description: "INSTINCT BEFORE THE QUESTION FINISHES LEAVING THE SCREEN", icon: "⚡" };
+  }
+  if (avgTime < 3000) {
+    return { pattern: "quick", description: "COMMITS UNDER 3 SECONDS AND RARELY FLINCHES", icon: "🔥" };
+  }
+  if (avgTime < 4500) {
+    return { pattern: "deliberate", description: "PAUSES TO WEIGH OPTICS BEFORE EVERY MOVE", icon: "🧠" };
+  }
+  if (avgTime < 6000) {
+    return { pattern: "hesitant", description: "READS THE ROOM TWICE BEFORE RISKING A RESPONSE", icon: "🕵️" };
+  }
+  return { pattern: "chaotic", description: "SCRAMBLES BETWEEN LIGHTNING AND PARALYZED TIMING", icon: "🎲" };
+}
+
+function calculateQuickResult(answers: QuickAnswer[]): QuickResult {
   const scores: Record<string, number> = {};
   QUICK_CHARACTERS.forEach((c) => (scores[c.id] = 0));
 
@@ -21,27 +73,37 @@ function calculateQuickResult(answers: { questionId: number; optionId: string }[
     });
   });
 
-  let bestChar = QUICK_CHARACTERS[0];
-  let bestScore = -1;
-  Object.entries(scores).forEach(([charId, score]) => {
-    if (score > bestScore) {
-      bestScore = score;
-      bestChar = QUICK_CHARACTERS.find((c) => c.id === charId) || bestChar;
-    }
-  });
+  const ranked = Object.entries(scores)
+    .map(([id, score]) => ({
+      character: QUICK_CHARACTERS.find((c) => c.id === id) as QuickCharacter,
+      score,
+    }))
+    .sort((a, b) => b.score - a.score);
 
-  return { character: bestChar, allScores: scores };
+  const totalTime = answers.reduce((s, a) => s + (a.responseTimeMs || 0), 0);
+  const avgTime = answers.length ? Math.round(totalTime / answers.length) : 0;
+  const fastest = answers.length ? Math.min(...answers.map((a) => a.responseTimeMs)) : 0;
+
+  return {
+    character: ranked[0].character,
+    runnerUp: ranked[1] ? ranked[1].character : null,
+    margin: ranked[0].score - (ranked[1]?.score ?? 0),
+    allScores: scores,
+    avgTime,
+    fastest,
+    responsePattern: getResponsePattern(avgTime),
+  };
 }
 
 export function QuickCheckPage() {
   const router = useRouter();
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<{ questionId: number; optionId: string }[]>([]);
+  const [answers, setAnswers] = useState<QuickAnswer[]>([]);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showIntro, setShowIntro] = useState(true);
   const [showResult, setShowResult] = useState(false);
-  const [result, setResult] = useState<ReturnType<typeof calculateQuickResult> | null>(null);
+  const [result, setResult] = useState<QuickResult | null>(null);
   const [streak, setStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const bestStreakRef = useRef(0);
@@ -49,7 +111,8 @@ export function QuickCheckPage() {
   const answeringRef = useRef(false);
   const pendingNavigationRef = useRef(false);
 
-  const questions = QUICK_QUESTIONS;
+  const [deck] = useState(() => buildQuickDeck());
+  const questions = deck;
   const currentQ = questions[currentQuestion];
   const progress = ((currentQuestion + 1) / questions.length) * 100;
 
@@ -60,7 +123,7 @@ export function QuickCheckPage() {
       playSelect();
 
       const responseTimeMs = Date.now() - questionStartTime;
-      const newAnswers = [...answers, { questionId, optionId }];
+      const newAnswers = [...answers, { questionId, optionId, responseTimeMs }];
       setAnswers(newAnswers);
       setSelectedOption(null);
 
@@ -100,7 +163,12 @@ export function QuickCheckPage() {
           "quickAuraResult",
           JSON.stringify({
             character: finalResult.character,
+            runnerUp: finalResult.runnerUp,
+            margin: finalResult.margin,
             allScores: finalResult.allScores,
+            avgTime: finalResult.avgTime,
+            fastest: finalResult.fastest,
+            responsePattern: finalResult.responsePattern,
             answers: newAnswers,
             bestStreak: finalBestStreak,
           })
