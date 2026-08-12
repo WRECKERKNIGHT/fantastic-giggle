@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Swords, Zap, Eye, Flame, Skull } from "lucide-react";
+import { Magnetic } from "@/components/Magnetic";
 
 const QUOTES = [
   "Presence cannot be faked. Only measured.",
@@ -172,24 +173,28 @@ export function HeroSection({
           transition={{ delay: 0.95, duration: 0.5, type: "spring" }}
           className="flex flex-col items-center justify-center gap-6 sm:flex-row"
         >
-          <motion.button
-            onClick={onStart}
-            className="sketch-btn text-lg"
-            whileHover={{ rotate: -0.6 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <Swords className="h-6 w-6" />
-            FULL 50-QUESTION EXAM
-          </motion.button>
+          <Magnetic>
+            <motion.button
+              onClick={onStart}
+              className="sketch-btn text-lg"
+              whileHover={{ rotate: -0.6 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <Swords className="h-6 w-6" />
+              FULL 50-QUESTION EXAM
+            </motion.button>
+          </Magnetic>
 
-          <motion.button
-            onClick={onQuickCheck}
-            className="sketch-btn sketch-btn-outline text-lg"
-            whileHover={{ rotate: 0.6 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            QUICK 10-QUESTION CHECK
-          </motion.button>
+          <Magnetic>
+            <motion.button
+              onClick={onQuickCheck}
+              className="sketch-btn sketch-btn-outline text-lg"
+              whileHover={{ rotate: 0.6 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              QUICK 10-QUESTION CHECK
+            </motion.button>
+          </Magnetic>
         </motion.div>
 
         <motion.p

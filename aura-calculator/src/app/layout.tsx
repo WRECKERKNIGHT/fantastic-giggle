@@ -4,6 +4,7 @@ import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ScrollProgress } from "@/components/ScrollProgress";
 import { MotionProvider } from "@/components/Motion/MotionProvider";
+import { CursorGlow } from "@/components/CursorGlow";
 
 const playfair = Playfair_Display({
   variable: "--font-display",
@@ -85,6 +86,7 @@ export default function RootLayout({
         <MotionProvider>
           <SmoothScroll>
             <ScrollProgress />
+            <CursorGlow />
             {children}
           </SmoothScroll>
         </MotionProvider>

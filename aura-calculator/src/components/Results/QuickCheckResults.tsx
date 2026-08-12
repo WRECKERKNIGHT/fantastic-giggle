@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { RotateCcw, Share2, ArrowLeft, Sparkles, Zap } from "lucide-react";
+import { RotateCcw, Share2, ArrowLeft, Sparkles, Zap, Image as ImageIcon, Trophy } from "lucide-react";
 import { QuickCharacter, QUICK_CHARACTERS } from "@/lib/quickQuestions";
 import { CHARACTER_AVATARS } from "@/components/QuickCheck/CharacterAvatars";
 import { smoothScrollTo } from "@/lib/scroll";
+import { HallOfFame } from "./HallOfFame";
+import { saveAuraEntry } from "@/lib/auraHallOfFame";
+import { downloadAuraShareCard } from "@/lib/auraShareCard";
 
 type StoredResult = {
   character: QuickCharacter;
@@ -73,6 +76,19 @@ export function QuickCheckResults() {
     setLoading(false);
     smoothScrollTo(0);
   }, [router]);
+
+  // Save this result to the Hall of Fame once the character is known
+  useEffect(() => {
+    if (!result) return;
+    saveAuraEntry({
+      mode: "quick",
+      tier: result.character.id,
+      emoji: result.character.emoji,
+      label: result.character.name,
+      score: result.bestStreak * 1000,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result?.character.id]);
 
   const handleRestart = () => {
     localStorage.removeItem("quickAuraResult");
@@ -178,6 +194,17 @@ export function QuickCheckResults() {
           </motion.div>
         )}
 
+        {/* Hall of Fame */}
+        <motion.div variants={item}>
+          <div className="ink-divider mb-4">
+            <span className="flex items-center gap-2 font-[var(--font-mono)] text-sm font-bold tracking-widest">
+              <Trophy className="h-4 w-4" />
+              HALL OF FAME
+            </span>
+          </div>
+          <HallOfFame />
+        </motion.div>
+
         {/* Action Buttons */}
         <motion.div variants={item} className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 pb-8">
           <motion.button onClick={handleRestart}
@@ -198,6 +225,25 @@ export function QuickCheckResults() {
             aria-label="Share your quick aura result">
             <Share2 className="h-5 w-5" />
             SHARE
+          </motion.button>
+
+          <motion.button onClick={async () => {
+              try {
+                await downloadAuraShareCard({
+                  score: result.bestStreak * 1000,
+                  tierName: character.name,
+                  emoji: character.emoji,
+                  color: character.accentColor,
+                  mode: "quick",
+                  label: character.title,
+                });
+              } catch {}
+            }}
+            className="sketch-btn sketch-btn-outline"
+            whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+            aria-label="Save your quick aura share card image">
+            <ImageIcon className="h-5 w-5" />
+            SAVE IMAGE
           </motion.button>
         </motion.div>
       </motion.div>

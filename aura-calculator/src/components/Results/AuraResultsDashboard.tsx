@@ -28,9 +28,13 @@ import {
   Heart,
   Flame,
   Crown,
+  Image as ImageIcon,
 } from "lucide-react";
 import { AnimeCharacter } from "@/components/Anime/AnimeCharacters";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { HallOfFame } from "./HallOfFame";
+import { saveAuraEntry } from "@/lib/auraHallOfFame";
+import { downloadAuraShareCard } from "@/lib/auraShareCard";
 
 // ===== CANVAS ERROR BOUNDARY FOR WebGL CONTEXT LOSS =====
 function CanvasErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -60,6 +64,7 @@ type ResultsProps = {
   };
   auraVelocity: number[];
   onRestart: () => void;
+  saveEntry?: boolean;
 };
 
 const INK = "#14110c";
@@ -510,9 +515,23 @@ export function AuraResultsDashboard({
   responsePattern,
   auraVelocity,
   onRestart,
+  saveEntry = true,
 }: ResultsProps) {
   const tierInfo = TIERS[tier];
   const [copied, setCopied] = useState(false);
+
+  // Save this result to the Hall of Fame once
+  useEffect(() => {
+    if (!saveEntry) return;
+    saveAuraEntry({
+      mode: "full",
+      tier,
+      emoji: tierInfo.emoji,
+      label: tierInfo.name,
+      score,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Truth score calculation
   const truthScore = truthMatrix.length > 0
@@ -702,6 +721,12 @@ export function AuraResultsDashboard({
         </div>
       </motion.div>
 
+      {/* Hall of Fame */}
+      <motion.div variants={item}>
+        <SectionHeader icon={<Trophy className="h-5 w-5" />} title="Hall of Fame" />
+        <HallOfFame />
+      </motion.div>
+
       {/* Score Breakdown */}
       <motion.div variants={item}>
         <SectionHeader icon={<Trophy className="h-5 w-5" />} title="Score Breakdown" />
@@ -823,6 +848,29 @@ export function AuraResultsDashboard({
         >
           <Share2 className="h-6 w-6" />
           {copied ? "COPIED!" : "SHARE"}
+        </motion.button>
+
+        <motion.button
+          onClick={async () => {
+            try {
+              await downloadAuraShareCard({
+                score,
+                tierName: tierInfo.name,
+                emoji: tierInfo.emoji,
+                color: tierInfo.color,
+                mode: "full",
+              });
+            } catch {
+              // canvas unavailable
+            }
+          }}
+          className="sketch-btn sketch-btn-outline"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          aria-label="Save your aura share card image"
+        >
+          <ImageIcon className="h-6 w-6" />
+          SAVE IMAGE
         </motion.button>
       </motion.div>
     </motion.div>
