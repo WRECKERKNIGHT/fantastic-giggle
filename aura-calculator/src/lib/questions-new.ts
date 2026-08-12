@@ -751,6 +751,80 @@ export const CURVEBALL_QUESTIONS: QuizQuestion[] = [
       { id: "105d", text: "Scream", scores: { fumble: 40, composure: -20 }, narrativeTag: "hot_scream" },
     ],
   },
+  {
+    id: 106,
+    phase: 1,
+    text: "Curveball: A stranger stops you mid-walk: 'Do I know you?'",
+    subtext: "⚡ UNPREDICTABLE QUESTION",
+    options: [
+      { id: "106a", text: "'Wrong person, sorry.'", scores: { composure: 30 }, narrativeTag: "wrong_person" },
+      { id: "106b", text: "'You should.'", scores: { presence: 40, composure: 30 }, narrativeTag: "you_should" },
+      { id: "106c", text: "Check your own face first", scores: { fumble: 30, desperation: 10 }, narrativeTag: "face_check" },
+      { id: "106d", text: "Lean in and ask who's asking", scores: { presence: 30, fluidity: 30 }, narrativeTag: "who_asking" },
+    ],
+  },
+  {
+    id: 107,
+    phase: 2,
+    text: "Curveball: The group chat is roasting you. Your play?",
+    subtext: "⚡ UNPREDICTABLE QUESTION",
+    options: [
+      { id: "107a", text: "Roast back instantly", scores: { fluidity: 40, composure: 20 }, narrativeTag: "roast_back" },
+      { id: "107b", text: "Leave the chat", scores: { fumble: 20, composure: -10 }, narrativeTag: "chat_leave" },
+      { id: "107c", text: "Laugh and screenshot it for later", scores: { composure: 40, fluidity: 10 }, narrativeTag: "chat_laugh" },
+      { id: "107d", text: "Start roasting someone else to deflect", scores: { desperation: 30, fluidity: 10 }, narrativeTag: "chat_deflect" },
+    ],
+  },
+  {
+    id: 108,
+    phase: 3,
+    text: "Curveball: You got caught flexing. The room is silent. Now?",
+    subtext: "⚡ UNPREDICTABLE QUESTION",
+    options: [
+      { id: "108a", text: "Own it: 'Yeah, and?'", scores: { presence: 50, composure: 30 }, narrativeTag: "own_it" },
+      { id: "108b", text: "Pretend it was a joke", scores: { desperation: 40 }, isHoneypot: true, narrativeTag: "pretender" },
+      { id: "108c", text: "Deflect to someone else", scores: { fumble: 20, composure: -10 }, narrativeTag: "flex_deflect" },
+      { id: "108d", text: "Double down and flex harder", scores: { desperation: 30, fumble: 10 }, narrativeTag: "double_flex" },
+    ],
+  },
+  {
+    id: 109,
+    phase: 4,
+    text: "Curveball: The mic is on you at a wedding. No speech prepared.",
+    subtext: "⚡ UNPREDICTABLE QUESTION",
+    spectatorCount: 350,
+    options: [
+      { id: "109a", text: "Improvise a toast on the spot", scores: { presence: 50, fluidity: 40 }, narrativeTag: "toast_improv" },
+      { id: "109b", text: "Hand the mic to someone else", scores: { fumble: 20, composure: -10 }, narrativeTag: "mic_pass" },
+      { id: "109c", text: "Say one word and sit down", scores: { composure: 30, fumble: 10 }, narrativeTag: "one_word" },
+      { id: "109d", text: "Start a chant to buy time", scores: { fluidity: 40, desperation: 10 }, narrativeTag: "chant_time" },
+    ],
+  },
+  {
+    id: 110,
+    phase: 5,
+    text: "Curveball: A bee flies straight at your face. Now.",
+    subtext: "⚡ UNPREDICTABLE QUESTION",
+    timeLimitMs: 1500,
+    options: [
+      { id: "110a", text: "Stay completely still", scores: { composure: 50, presence: 30 }, narrativeTag: "bee_still" },
+      { id: "110b", text: "Swing at it", scores: { fumble: 30, composure: -20 }, narrativeTag: "bee_swing" },
+      { id: "110c", text: "Run", scores: { fumble: 40 }, narrativeTag: "bee_run" },
+      { id: "110d", text: "Wave it off calmly", scores: { composure: 40, fluidity: 20 }, narrativeTag: "bee_wave" },
+    ],
+  },
+  {
+    id: 111,
+    phase: 3,
+    text: "Curveball: Your crush just saw your search history. What now?",
+    subtext: "⚡ UNPREDICTABLE QUESTION",
+    options: [
+      { id: "111a", text: "Lock the phone slowly and smile", scores: { composure: 40, presence: 20 }, narrativeTag: "lock_smile" },
+      { id: "111b", text: "'That was for a friend.'", scores: { desperation: 40 }, isHoneypot: true, narrativeTag: "nice_liar" },
+      { id: "111c", text: "Own it: 'We've all been there.'", scores: { fluidity: 40, composure: 30 }, narrativeTag: "own_history" },
+      { id: "111d", text: "Drop the phone and run", scores: { fumble: 40, composure: -20 }, narrativeTag: "phone_run" },
+    ],
+  },
 ];
 
 // ===== THE 50-QUESTION EXAM (regular progression) =====
