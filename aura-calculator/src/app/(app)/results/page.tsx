@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { TIERS, AuraTier } from "@/lib/questions-new";
+import { StoredAnswer } from "@/lib/auraReasoning";
 import { smoothScrollTo } from "@/lib/scroll";
 
 // Dynamic import for heavy 3D results
@@ -50,6 +51,9 @@ type StoredResults = {
     description: string;
     icon: string;
   };
+  answers?: StoredAnswer[];
+  bestStreak?: number;
+  curveballCount?: number;
 };
 
 export default function ResultsPage() {
@@ -204,6 +208,9 @@ function ResultsPageInner() {
           auraVelocity={results.auraVelocity}
           onRestart={handleRestart}
           saveEntry={!isSharedLink}
+          answers={results.answers}
+          bestStreak={results.bestStreak}
+          curveballCount={results.curveballCount}
         />
       </div>
     </>
