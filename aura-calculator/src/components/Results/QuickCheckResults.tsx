@@ -3,18 +3,24 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { RotateCcw, Share2, ArrowLeft, Sparkles, Zap, Image as ImageIcon, Trophy } from "lucide-react";
-import { QuickCharacter, QUICK_CHARACTERS } from "@/lib/quickQuestions";
+import { RotateCcw, Share2, ArrowLeft, Sparkles, Zap, Image as ImageIcon, Trophy, Timer, Gauge, History } from "lucide-react";
+import { QuickCharacter, QUICK_CHARACTERS, QUICK_QUESTIONS } from "@/lib/quickQuestions";
 import { CHARACTER_AVATARS } from "@/components/QuickCheck/CharacterAvatars";
 import { smoothScrollTo } from "@/lib/scroll";
 import { HallOfFame } from "./HallOfFame";
 import { saveAuraEntry } from "@/lib/auraHallOfFame";
 import { downloadAuraShareCard } from "@/lib/auraShareCard";
+import { QuickResponsePattern, QuickAnswer } from "@/components/QuickCheck/QuickCheckPage";
 
 type StoredResult = {
   character: QuickCharacter;
+  runnerUp: QuickCharacter | null;
+  margin: number;
   allScores: Record<string, number>;
-  answers: { questionId: number; optionId: string }[];
+  avgTime: number;
+  fastest: number;
+  responsePattern: QuickResponsePattern;
+  answers: QuickAnswer[];
   bestStreak: number;
 };
 
@@ -110,6 +116,12 @@ export function QuickCheckResults() {
   const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.3 } } };
   const item = { hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.6 } } };
 
+  const review = (result.answers ?? []).map((a) => {
+    const q = QUICK_QUESTIONS.find((question) => question.id === a.questionId);
+    const option = q?.options.find((o) => o.id === a.optionId);
+    return { text: q?.text ?? "UNKNOWN QUESTION", choice: option?.text ?? "—", time: a.responseTimeMs };
+  });
+
   return (
     <div className="relative min-h-screen bg-[var(--paper)] p-4 md:p-8 paper-grain">
       <div className="halftone absolute inset-0 opacity-30" />
@@ -191,6 +203,96 @@ export function QuickCheckResults() {
             <p className="font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
               You answered {result.bestStreak} questions in under 3 seconds straight!
             </p>
+          </motion.div>
+        )}
+
+        {/* Shadow self */}
+        {result.runnerUp && (
+          <motion.div variants={item} className="sketch-card p-8 text-center">
+            <div className="ink-divider mb-6">
+              <span className="font-[var(--font-mono)] text-sm font-bold tracking-widest">YOUR SHADOW SELF</span>
+            </div>
+            <div className="flex flex-col items-center justify-center gap-6 sm:flex-row">
+              <CharacterAvatar character={result.runnerUp} size="small" />
+              <div className="text-center sm:text-left">
+                <p className="font-[var(--font-display)] text-3xl font-black uppercase text-[var(--ink)]">
+                  {result.runnerUp.name}
+                </p>
+                <p className="font-[var(--font-mono)] text-sm font-bold tracking-widest text-[var(--ink-soft)]">
+                  {result.runnerUp.title.toUpperCase()}
+                </p>
+                <p className="mt-1 font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
+                  {result.margin > 0
+                    ? `ONLY ${result.margin} POINT${result.margin === 1 ? "" : "S"} BEHIND — A HINGE MOMENT FROM WRAPPING YOU`
+                    : "DEADLOCKED — THE SCANNER FLIPPED A COIN"}
+                </p>
+                <p className="mt-2 text-sm italic text-[var(--ink-muted)]">&ldquo;{result.runnerUp.tagline}&rdquo;</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Instinct velocity */}
+        {result.responsePattern && (
+          <motion.div variants={item}>
+            <div className="ink-divider mb-4">
+              <span className="font-[var(--font-mono)] text-sm font-bold tracking-widest">INSTINCT VELOCITY</span>
+            </div>
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+              <div className="sketch-card-thin p-5 text-center">
+                <Timer className="mx-auto mb-2 h-5 w-5 text-[var(--ink)]" />
+                <p className="font-[var(--font-mono)] text-2xl font-black text-[var(--ink)]">
+                  {(result.avgTime / 1000).toFixed(1)}s
+                </p>
+                <p className="mt-1 font-[var(--font-mono)] text-[10px] tracking-widest text-[var(--ink-muted)]">AVG REPLY</p>
+              </div>
+              <div className="sketch-card-thin p-5 text-center">
+                <Gauge className="mx-auto mb-2 h-5 w-5 text-[var(--ink)]" />
+                <p className="font-[var(--font-mono)] text-2xl font-black text-[var(--ink)]">
+                  {(result.fastest / 1000).toFixed(1)}s
+                </p>
+                <p className="mt-1 font-[var(--font-mono)] text-[10px] tracking-widest text-[var(--ink-muted)]">FASTEST</p>
+              </div>
+              <div className="sketch-card-thin col-span-2 p-5 text-center">
+                <span className="text-2xl">{result.responsePattern.icon}</span>
+                <p className="mt-1 font-[var(--font-mono)] text-sm font-bold text-[var(--ink)]">
+                  {result.responsePattern.description}
+                </p>
+                <p className="mt-1 font-[var(--font-mono)] text-[10px] tracking-widest text-[var(--ink-muted)]">
+                  RESPONSE PATTERN
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Answer review */}
+        {review.length > 0 && (
+          <motion.div variants={item}>
+            <div className="ink-divider mb-4">
+              <span className="flex items-center gap-2 font-[var(--font-mono)] text-sm font-bold tracking-widest">
+                <History className="h-4 w-4" />
+                RUN PLAYBACK
+              </span>
+            </div>
+            <div className="sketch-card p-6">
+              <ul className="space-y-3">
+                {review.map((r, i) => (
+                  <li key={i} className="border-b border-[var(--ink-line-faint)] pb-3 last:border-0 last:pb-0">
+                    <div className="mb-1 flex items-baseline justify-between gap-4">
+                      <span className="font-[var(--font-mono)] text-[10px] font-bold tracking-widest text-[var(--ink-muted)]">
+                        Q{String(i + 1).padStart(2, "0")} · {(r.time / 1000).toFixed(1)}s
+                      </span>
+                      <span className="font-[var(--font-mono)] text-[10px] text-[var(--ink-faint)]">
+                        {r.time < 3000 ? "⚡ INSTINCT" : r.time < 4500 ? "◆ WEIGHED" : "◇ OVERTHOUGHT"}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-[var(--ink)]">{r.text}</p>
+                    <p className="text-sm italic text-[var(--ink-muted)]">&rarr; {r.choice}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </motion.div>
         )}
 
