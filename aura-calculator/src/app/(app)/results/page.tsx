@@ -203,6 +203,7 @@ function ResultsPageInner() {
           responsePattern={results.responsePattern}
           auraVelocity={results.auraVelocity}
           onRestart={handleRestart}
+          saveEntry={!isSharedLink}
         />
       </div>
     </>
