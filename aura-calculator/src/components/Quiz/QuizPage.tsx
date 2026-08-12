@@ -19,6 +19,7 @@ import {
   getCurrentPhase,
 } from "@/lib/truthMatrix";
 import { smoothScrollTo } from "@/lib/scroll";
+import { playSelect } from "@/lib/auraSound";
 import {
   Eye,
   Zap,
@@ -51,6 +52,10 @@ const PRESSURE_EVENTS: PressureEvent[] = [
   { id: "reverseText1", type: "reverseText", duration: 1500, message: "REVERSE MODE", icon: "⇄" },
   { id: "glitch3", type: "glitch", duration: 500, message: "DATA CORRUPTION", icon: "◢" },
   { id: "shake2", type: "shake", duration: 400, message: "VIBRATION PULSE", icon: "≈" },
+  { id: "reverseText2", type: "reverseText", duration: 1200, message: "INVERTED PERCEPTION", icon: "⇄" },
+  { id: "speedUp2", type: "speedUp", duration: 1800, message: "CLOCK SHIFT", icon: "▶" },
+  { id: "distraction2", type: "distraction", duration: 1200, message: "NOISE FLOOD", icon: "◎" },
+  { id: "glitch4", type: "glitch", duration: 700, message: "MEMORY FRAGMENT", icon: "◢" },
 ];
 
 // ===== FISHER-YATES SHUFFLE =====
@@ -61,6 +66,47 @@ function shuffleArray<T>(arr: T[]): T[] {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
   return shuffled;
+}
+
+// ===== DETERMINISTIC SEEDED SHUFFLE =====
+// Same seed + array => same order. Used so every run deals a fresh,
+// unpredictable layout that stays stable while a question is on screen.
+function seededShuffle<T>(arr: T[], seed: number): T[] {
+  const shuffled = [...arr];
+  let s = seed >>> 0;
+  const rnd = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 0xffffffff;
+  };
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
+// ===== PER-RUN QUESTION ORDER =====
+// Shuffle the 10 questions inside every phase so each run deals a
+// different sequence while preserving phase boundaries and scoring.
+function buildRunQuestionOrder(): QuizQuestion[] {
+  const seed = Math.floor(Math.random() * 0xffffffff);
+  const groups: QuizQuestion[][] = [];
+  for (let i = 0; i < REGULAR_QUESTIONS.length; i += 10) {
+    groups.push(REGULAR_QUESTIONS.slice(i, i + 10));
+  }
+  return groups.flatMap((group, i) => seededShuffle(group, seed + i * 101));
+}
+
+// ===== MEMORIZATION COUNTERMEASURE =====
+// If a subject answers a huge share of questions suspiciously fast,
+// the system assumes the script is known and escalates unpredictability.
+function getMemorizationSuspicion(
+  answers: { responseTimeMs: number }[]
+): number {
+  if (answers.length < 5) return 0;
+  const recent = answers.slice(-6);
+  const ultraFast = recent.filter((a) => a.responseTimeMs < 900).length;
+  return ultraFast / recent.length;
 }
 
 // ===== DYNAMIC DIFFICULTY CALCULATOR =====
@@ -115,11 +161,15 @@ export function QuizPage() {
   const [curveballQuestion, setCurveballQuestion] = useState<QuizQuestion | null>(null);
   const [screenShake, setScreenShake] = useState(false);
   const [glitchIntensity, setGlitchIntensity] = useState(0);
+  const [reverseText, setReverseText] = useState(false);
+  const [distractionActive, setDistractionActive] = useState(false);
   const [scoreEstimate, setScoreEstimate] = useState(0);
+  const [curveballCount, setCurveballCount] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const answeringRef = useRef(false);
   const pressureEventTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const bestStreakRef = useRef(0);
+  const runShuffleSeedRef = useRef(Math.floor(Math.random() * 0xffffffff));
 
   const answersRef = useRef(answers);
   answersRef.current = answers;
@@ -127,8 +177,10 @@ export function QuizPage() {
   currentQuestionRef.current = currentQuestion;
   const questionStartTimeRef = useRef(questionStartTime);
   questionStartTimeRef.current = questionStartTime;
+  const showCurveballRef = useRef(showCurveball);
+  showCurveballRef.current = showCurveball;
 
-  const questions = REGULAR_QUESTIONS;
+  const [questions] = useState<QuizQuestion[]>(() => buildRunQuestionOrder());
   const currentQ = useMemo(() => {
     if (showCurveball && curveballQuestion) return curveballQuestion;
     return questions[currentQuestion];
@@ -136,8 +188,22 @@ export function QuizPage() {
   const currentQRef = useRef<QuizQuestion | null>(null);
   currentQRef.current = currentQ;
   const phase = getCurrentPhase(currentQuestion);
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
   const progress = ((currentQuestion + 1) / questions.length) * 100;
   const phaseInfo = PHASES[phase];
+
+  // Stable per-question option order, dealt fresh every run
+  const baseOrder = useMemo(() => {
+    if (!currentQ) return [];
+    return seededShuffle(
+      currentQ.options.map((_, i) => i),
+      runShuffleSeedRef.current * 31 + currentQ.id
+    );
+  }, [currentQ]);
+  const displayOrder = shuffledOptions.length > 0 ? shuffledOptions : baseOrder;
+  const shuffledOptionsRef = useRef<number[]>([]);
+  shuffledOptionsRef.current = displayOrder;
 
   // Dynamic difficulty
   const difficulty = useMemo(() => getDynamicDifficulty(answers, phase), [answers, phase]);
@@ -157,6 +223,7 @@ export function QuizPage() {
     (questionId: number, optionId: string) => {
       if (answeringRef.current) return;
       answeringRef.current = true;
+      playSelect();
 
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -193,12 +260,15 @@ export function QuizPage() {
         setCurrentPressureEvent(null);
         setScreenShake(false);
         setGlitchIntensity(0);
+        setReverseText(false);
+        setDistractionActive(false);
       }
 
       // ===== CURVEBALL ANSWER: record it, then return to the real question =====
       if (showCurveball) {
         setShowCurveball(false);
         setCurveballQuestion(null);
+        setCurveballCount((c) => c + 1);
         setQuestionStartTime(Date.now());
         answeringRef.current = false;
         return;
@@ -229,9 +299,11 @@ export function QuizPage() {
           "auraResults",
           JSON.stringify({
             ...result,
+            answers: newAnswers,
             auraVelocity: velocity,
             responsePattern: pattern,
             bestStreak: bestStreakRef.current,
+            curveballCount,
             totalCurveballs: newAnswers.filter((a) => a.questionId >= 100).length,
           })
         );
@@ -243,6 +315,31 @@ export function QuizPage() {
 
   const handleAnswerRef = useRef(handleAnswer);
   handleAnswerRef.current = handleAnswer;
+
+  // ===== KEYBOARD ANSWERS (1-4) =====
+  useEffect(() => {
+    if (!quizStarted || showPhaseTransition || showDisclaimer) return;
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      if (phaseRef.current === 2) return; // Phase 2 chat handles its own keys
+      const index = parseInt(e.key, 10) - 1;
+      if (index < 0 || index > 3) return;
+      const q = currentQRef.current;
+      if (!q) return;
+      const order =
+        shuffledOptionsRef.current.length > 0
+          ? shuffledOptionsRef.current
+          : q.options.map((_, i) => i);
+      const option = q.options[order[index]];
+      if (!option) return;
+      e.preventDefault();
+      setSelectedOption(option.id);
+      handleAnswerRef.current(q.id, option.id);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [quizStarted, showPhaseTransition, showDisclaimer]);
 
   // Timer for Phase 5 (and curveball questions with timeLimitMs)
   useEffect(() => {
@@ -300,25 +397,28 @@ export function QuizPage() {
     }
   }, [currentQuestion, phase, currentQ?.spectatorCount]);
 
-  // Shuffle for Phase 5
+  // ===== PHASE 5 OPTION SCRAMBLE =====
+  // Phase 5 re-scrambles the already-shuffled options on screen.
   useEffect(() => {
     if (phase === 5 && quizStarted && currentQ) {
-      const initialOrder = currentQ.options.map((_, i) => i);
-      setShuffledOptions(shuffleArray(initialOrder));
+      setShuffledOptions(shuffleArray(baseOrder));
       setShufflingOptions(true);
       const timeout = setTimeout(() => setShufflingOptions(false), 500);
       return () => clearTimeout(timeout);
-    } else if (quizStarted && currentQ) {
-      setShuffledOptions(currentQ.options.map((_, i) => i));
+    } else if (quizStarted) {
+      setShuffledOptions([]);
     }
-  }, [currentQuestion, phase, quizStarted, currentQ]);
+  }, [currentQuestion, phase, quizStarted, currentQ, baseOrder]);
 
   // ===== PRESSURE EVENT SYSTEM =====
   useEffect(() => {
     if (!quizStarted || showPhaseTransition) return;
 
+    // Streaks attract the system's attention: escalation on hot runs
+    const streakEscalation = streak >= 3 ? 0.1 : 0;
+
     // Random pressure events
-    if (Math.random() < difficulty.pressureEventChance) {
+    if (Math.random() < difficulty.pressureEventChance + streakEscalation) {
       const randomEvent = PRESSURE_EVENTS[Math.floor(Math.random() * PRESSURE_EVENTS.length)];
       setCurrentPressureEvent(randomEvent);
 
@@ -332,14 +432,44 @@ export function QuizPage() {
         setTimeout(() => setGlitchIntensity(0), randomEvent.duration);
       }
 
+      if (randomEvent.type === "speedUp") {
+        // Real clock theft: eat half a second off the timer
+        setTimeLeft((prev) => (prev === null ? prev : Math.max(0.4, prev - 0.5)));
+      }
+
+      if (randomEvent.type === "reverseText") {
+        setReverseText(true);
+        setTimeout(() => setReverseText(false), randomEvent.duration);
+      }
+
+      if (randomEvent.type === "distraction") {
+        setDistractionActive(true);
+        setTimeout(() => setDistractionActive(false), randomEvent.duration);
+      }
+
       pressureEventTimeoutRef.current = setTimeout(() => {
         setCurrentPressureEvent(null);
+        setScreenShake(false);
+        setGlitchIntensity(0);
+        setReverseText(false);
+        setDistractionActive(false);
       }, randomEvent.duration);
     }
 
+    // ===== ADAPTIVE CURVEBALL INJECTION =====
+    // Base chance scales with speed, then escalates when the subject
+    // answers suspiciously fast (memorization countermeasure) and once
+    // a few curveballs have already landed (chaos chain).
+    const suspicion = getMemorizationSuspicion(answersRef.current);
+    const chainBonus = curveballCount >= 2 ? 0.12 : 0;
+    const curveballChance = Math.min(
+      0.55,
+      difficulty.curveballChance + suspicion * 0.25 + chainBonus
+    );
+
     // Random curveball questions (never above the 50 regular questions)
     if (
-      Math.random() < difficulty.curveballChance &&
+      Math.random() < curveballChance &&
       currentQuestion > 5 &&
       currentQuestion < questions.length
     ) {
@@ -359,7 +489,7 @@ export function QuizPage() {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentQuestion, quizStarted]);
+  }, [currentQuestion, quizStarted, curveballCount]);
 
   const handleStartQuiz = () => setShowDisclaimer(true);
   const handleAcceptDisclaimer = () => {
@@ -768,7 +898,7 @@ export function QuizPage() {
                 transition={{ delay: 0.15 }}
                 className="mb-6 font-[var(--font-display)] text-2xl font-bold text-[var(--ink)] md:text-3xl"
               >
-                {currentQ.text}
+                {reverseText ? currentQ.text.split("").reverse().join("") : currentQ.text}
               </motion.h2>
               {currentQ.subtext && (
                 <motion.p
@@ -782,11 +912,15 @@ export function QuizPage() {
               )}
 
               {/* ===== OPTIONS ===== */}
-              <div className={`space-y-3 ${shufflingOptions ? "animate-pulse" : ""}`}>
-                {(shuffledOptions.length > 0
-                  ? shuffledOptions
-                  : currentQ.options.map((_, i) => i)
-                ).map((optionIndex, displayIndex) => {
+              <div className={`relative space-y-3 ${shufflingOptions ? "animate-pulse" : ""}`}>
+                {distractionActive && (
+                  <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-[var(--paper-card)]/60 backdrop-blur-[1px]">
+                    <span className="animate-pulse font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--ink)]">
+                      FOCUS DISRUPTED
+                    </span>
+                  </div>
+                )}
+                {displayOrder.map((optionIndex, displayIndex) => {
                   const option = currentQ.options[optionIndex];
                   return (
                     <motion.button
@@ -859,6 +993,7 @@ export function QuizPage() {
                     <span>INVOLUNTARY RESPONSES ARE BEING LOGGED.</span>
                   </>
                 )}
+                <span className="font-bold text-[var(--ink)]">PRESS 1-4 TO ANSWER</span>
               </motion.div>
             </motion.div>
           </AnimatePresence>

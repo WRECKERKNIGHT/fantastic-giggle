@@ -382,6 +382,29 @@ body {
   animation: breathe 3s ease-in-out infinite;
 }
 
+/* ===== CINEMATIC MOTION SYSTEM =====
+   Elements are masked until the GSAP reveal system animates them in. */
+html.has-motion [data-motion-text],
+html.has-motion [data-reveal],
+html.has-motion [data-reveal-item] {
+  visibility: hidden;
+}
+
+.motion-word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.motion-word {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+[data-parallax-layer] {
+  will-change: transform;
+}
+
 /* ===== RESULTS CONFETTI ===== */
 @keyframes confetti-fall {
   0% {

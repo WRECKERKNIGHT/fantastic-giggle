@@ -180,6 +180,23 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
     }
   };
 
+  // ===== KEYBOARD ANSWERS (1-4) =====
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (isTyping || selectedOption) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      const index = parseInt(e.key, 10) - 1;
+      if (index < 0 || index >= question.options.length) return;
+      const option = question.options[index];
+      if (!option) return;
+      e.preventDefault();
+      handleOptionSelect(option.id);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [question, isTyping, selectedOption, handleOptionSelect]);
+
   return (
     <div className="flex h-full flex-col">
       {/* Chat Header */}
@@ -277,6 +294,7 @@ export function Phase2Chat({ question, onAnswer, questionNumber, totalQuestions 
         <div className="mt-4 flex items-center gap-2 font-[var(--font-mono)] text-xs text-[var(--ink-muted)]">
           <span className="inline-block h-2 w-2 bg-[var(--ink)]" />
           <span>RESPONSE TIME AFFECTS YOUR SCORE. ANSWER NATURALLY.</span>
+          <span className="ml-auto font-bold text-[var(--ink)]">PRESS 1-4</span>
         </div>
       </div>
     </div>

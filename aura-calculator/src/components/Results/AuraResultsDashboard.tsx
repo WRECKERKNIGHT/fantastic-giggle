@@ -35,6 +35,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { HallOfFame } from "./HallOfFame";
 import { saveAuraEntry } from "@/lib/auraHallOfFame";
 import { downloadAuraShareCard } from "@/lib/auraShareCard";
+import { generateAuraReasoning, StoredAnswer } from "@/lib/auraReasoning";
 
 // ===== CANVAS ERROR BOUNDARY FOR WebGL CONTEXT LOSS =====
 function CanvasErrorBoundary({ children }: { children: React.ReactNode }) {
@@ -65,6 +66,9 @@ type ResultsProps = {
   auraVelocity: number[];
   onRestart: () => void;
   saveEntry?: boolean;
+  answers?: StoredAnswer[];
+  bestStreak?: number;
+  curveballCount?: number;
 };
 
 const INK = "#14110c";
@@ -516,9 +520,29 @@ export function AuraResultsDashboard({
   auraVelocity,
   onRestart,
   saveEntry = true,
+  answers,
+  bestStreak,
+  curveballCount,
 }: ResultsProps) {
   const tierInfo = TIERS[tier];
   const [copied, setCopied] = useState(false);
+
+  // Aura Intelligence reasoning case file
+  const reasoning = useMemo(
+    () =>
+      generateAuraReasoning({
+        score,
+        tier,
+        axes,
+        breakdown,
+        truthMatrix,
+        responsePattern,
+        answers,
+        bestStreak,
+        curveballCount,
+      }),
+    [score, tier, axes, breakdown, truthMatrix, responsePattern, answers, bestStreak, curveballCount]
+  );
 
   // Save this result to the Hall of Fame once
   useEffect(() => {
@@ -776,6 +800,80 @@ export function AuraResultsDashboard({
         <p className="mx-auto max-w-lg text-lg text-[var(--ink-soft)]">
           {responsePattern.description}
         </p>
+      </motion.div>
+
+      {/* Aura Intelligence Case File */}
+      <motion.div variants={item} className="sketch-card-ink relative overflow-hidden p-8 text-[var(--paper)]">
+        <div className="crosshatch absolute inset-0 opacity-20" />
+        <div className="relative z-10">
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <h3 className="font-[var(--font-display)] text-2xl font-black uppercase text-[var(--paper)] md:text-3xl">
+              <span className="sketch-underline">Aura Intelligence Case File</span>
+            </h3>
+            <div className="sketch-card-thin border-[var(--paper)]/40 px-5 py-3 text-center">
+              <p className="font-[var(--font-mono)] text-xs tracking-widest text-[var(--paper-deep)]">
+                SIGNAL PURITY
+              </p>
+              <p className="font-[var(--font-mono)] text-3xl font-black text-[var(--paper)]">
+                {reasoning.intelligence}
+                <span className="text-lg text-[var(--paper-deep)]">/100</span>
+              </p>
+              <p className="font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--paper)]">
+                {reasoning.intelligenceLabel}
+              </p>
+            </div>
+          </div>
+
+          <div className="meter-track mb-6">
+            <motion.div
+              className="meter-fill bg-[var(--paper)]"
+              initial={{ width: 0 }}
+              animate={{ width: `${reasoning.intelligence}%` }}
+              transition={{ delay: 0.4, duration: 1, ease: "easeOut" }}
+            />
+          </div>
+
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <span className="stamp">{reasoning.dominantTrait.emoji}</span>
+            <span className="font-[var(--font-mono)] text-lg font-black tracking-widest text-[var(--paper)]">
+              DOMINANT TRAIT: {reasoning.dominantTrait.name}
+            </span>
+          </div>
+
+          <p className="mb-8 max-w-3xl font-[var(--font-display)] text-lg italic leading-relaxed text-[var(--paper-deep)]">
+            &ldquo;{reasoning.verdict}&rdquo;
+          </p>
+
+          <h4 className="mb-4 font-[var(--font-mono)] text-sm font-bold tracking-widest text-[var(--paper)]">
+            EVIDENCE
+          </h4>
+          <ul className="mb-8 space-y-3">
+            {reasoning.evidence.map((e, i) => (
+              <motion.li
+                key={i}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + i * 0.08 }}
+                className="flex items-start gap-3 text-[var(--paper-deep)]"
+              >
+                <span className="mt-0.5 shrink-0 font-[var(--font-mono)] text-[var(--paper)]">
+                  {e.type === "positive" ? "+" : e.type === "negative" ? "−" : "·"}
+                </span>
+                <span>
+                  <span className="font-[var(--font-mono)] text-xs font-bold tracking-widest text-[var(--paper)]">
+                    {e.title}:
+                  </span>{" "}
+                  {e.detail}
+                </span>
+              </motion.li>
+            ))}
+          </ul>
+
+          <h4 className="mb-3 font-[var(--font-mono)] text-sm font-bold tracking-widest text-[var(--paper)]">
+            COUNTERMEASURE
+          </h4>
+          <p className="max-w-3xl text-[var(--paper-deep)]">{reasoning.countermeasure}</p>
+        </div>
       </motion.div>
 
       {/* Action Buttons */}

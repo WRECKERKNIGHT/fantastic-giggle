@@ -42,23 +42,32 @@ export function HeroSection({
       <div className="halftone absolute inset-0 opacity-30" />
       <div className="crosshatch-soft absolute inset-0" />
 
-      {/* Hand-drawn rings */}
-      <svg
-        className="absolute -top-32 -right-32 h-[30rem] w-[30rem] opacity-[0.07]"
-        viewBox="0 0 200 200"
-        fill="none"
-      >
-        <circle cx="100" cy="100" r="98" stroke="#14110c" strokeWidth="2" />
-        <circle cx="100" cy="100" r="84" stroke="#14110c" strokeWidth="1" strokeDasharray="5 5" />
-      </svg>
-      <svg
-        className="absolute -bottom-40 -left-40 h-[34rem] w-[34rem] opacity-[0.06]"
-        viewBox="0 0 200 200"
-        fill="none"
-      >
-        <circle cx="100" cy="100" r="98" stroke="#14110c" strokeWidth="2" />
-        <circle cx="100" cy="100" r="88" stroke="#14110c" strokeWidth="1" />
-      </svg>
+      {/* Scroll parallax hand-drawn rings */}
+      <div data-parallax-section className="absolute inset-0">
+        <svg
+          data-parallax-layer
+          data-parallax-speed="0.16"
+          className="absolute -top-32 -right-32 h-[30rem] w-[30rem] opacity-[0.07]"
+          viewBox="0 0 200 200"
+          fill="none"
+        >
+          <circle cx="100" cy="100" r="98" stroke="#14110c" strokeWidth="2" />
+          <circle cx="100" cy="100" r="84" stroke="#14110c" strokeWidth="1" strokeDasharray="5 5" />
+        </svg>
+      </div>
+
+      {/* Mouse-reactive hand-drawn rings */}
+      <div data-mouse-parallax className="absolute inset-0">
+        <svg
+          data-mouse-depth="0.06"
+          className="absolute -bottom-40 -left-40 h-[34rem] w-[34rem] opacity-[0.06]"
+          viewBox="0 0 200 200"
+          fill="none"
+        >
+          <circle cx="100" cy="100" r="98" stroke="#14110c" strokeWidth="2" />
+          <circle cx="100" cy="100" r="88" stroke="#14110c" strokeWidth="1" />
+        </svg>
+      </div>
 
       {/* Content */}
       <div className="relative z-10 mx-auto max-w-5xl px-4 text-center">

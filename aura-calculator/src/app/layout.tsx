@@ -3,6 +3,7 @@ import { Playfair_Display, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { ScrollProgress } from "@/components/ScrollProgress";
+import { MotionProvider } from "@/components/Motion/MotionProvider";
 import { CursorGlow } from "@/components/CursorGlow";
 
 const playfair = Playfair_Display({
@@ -82,11 +83,13 @@ export default function RootLayout({
             </filter>
           </defs>
         </svg>
-        <SmoothScroll>
-          <ScrollProgress />
-          <CursorGlow />
-          {children}
-        </SmoothScroll>
+        <MotionProvider>
+          <SmoothScroll>
+            <ScrollProgress />
+            <CursorGlow />
+            {children}
+          </SmoothScroll>
+        </MotionProvider>
       </body>
     </html>
   );

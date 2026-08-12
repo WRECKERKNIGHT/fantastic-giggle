@@ -19,12 +19,7 @@ export function Footer() {
         </div>
 
         {/* Logo */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-8"
-        >
+        <div data-reveal="fade-up" className="mb-8">
           <div className="mb-4 inline-flex items-center gap-3">
             <span className="font-[var(--font-display)] text-3xl font-black tracking-tight text-[var(--ink)]">
               GIGACHAD OP METER
@@ -33,15 +28,10 @@ export function Footer() {
           <p className="font-[var(--font-mono)] text-xs uppercase tracking-widest text-[var(--ink-muted)]">
             The most dangerous personality test on the internet.
           </p>
-        </motion.div>
+        </div>
 
         {/* Nav links */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-8 flex flex-wrap items-center justify-center gap-3"
-        >
+        <div data-reveal="fade-up" data-reveal-delay="0.1" className="mb-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/quick-check"
             className="sketch-card-thin inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-[var(--ink-soft)] hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
@@ -60,22 +50,17 @@ export function Footer() {
           >
             <Trophy className="h-4 w-4" /> My Results
           </Link>
-        </motion.div>
+        </div>
 
         {/* Made by */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mb-8"
-        >
+        <div data-reveal="blur-in" data-reveal-delay="0.15" className="mb-8">
           <p className="mb-2 font-[var(--font-mono)] text-xs uppercase tracking-widest text-[var(--ink-faint)]">
             Engineered with psychometric precision
           </p>
           <p className="sketch-underline inline-block font-[var(--font-display)] text-2xl font-black text-[var(--ink)]">
             Made by Harshit Mishra
           </p>
-        </motion.div>
+        </div>
 
         {/* Social links */}
         <div className="mb-8 flex items-center justify-center gap-4">

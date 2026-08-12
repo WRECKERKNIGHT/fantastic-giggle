@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import {
   Clock,
   MessageSquare,
@@ -88,12 +87,7 @@ export function HowItWorksSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl">
         {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-20 text-center"
-        >
+        <div data-reveal="blur-in" className="mb-20 text-center">
           <span className="stamp mb-6">THE MARKING SCHEME</span>
           <h2 className="mt-6 font-[var(--font-display)] text-5xl font-black uppercase sm:text-6xl">
             <span className="sketch-underline">How the system works</span>
@@ -101,7 +95,7 @@ export function HowItWorksSection() {
           <p className="mx-auto mt-6 max-w-2xl font-[var(--font-mono)] text-sm text-[var(--ink-muted)]">
             WE WON&apos;T REVEAL THE EXACT ENGINE. BUT HERE&apos;S ENOUGH TO KNOW YOU CAN&apos;T CHEAT.
           </p>
-        </motion.div>
+        </div>
 
         {/* 5 Phases */}
         <div className="mb-20">
@@ -110,12 +104,10 @@ export function HowItWorksSection() {
           </h3>
           <div className="space-y-4">
             {PHASES.map((phase, index) => (
-              <motion.div
+              <div
                 key={phase.phase}
-                initial={{ opacity: 0, x: index % 2 === 0 ? -40 : 40 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
+                data-reveal={index % 2 === 0 ? "slide-left" : "slide-right"}
+                data-reveal-delay={String(index * 0.1)}
                 className={`sketch-card-thin flex flex-col gap-5 p-6 sm:flex-row sm:items-center ${index % 2 === 0 ? "tilt-l" : "tilt-r"}`}
               >
                 {/* Phase number */}
@@ -145,7 +137,7 @@ export function HowItWorksSection() {
                 <div className="hidden shrink-0 border-2 border-[var(--ink-line)] px-3 py-1 font-[var(--font-mono)] text-[10px] font-bold tracking-wider text-[var(--ink-soft)] md:block">
                   {phase.mechanic}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -155,14 +147,11 @@ export function HowItWorksSection() {
           <h3 className="mb-8 text-center font-[var(--font-mono)] text-lg font-bold uppercase tracking-widest text-[var(--ink-soft)]">
             What We Track
           </h3>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div data-reveal-group className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {MARKING_POINTS.map((point, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.15 }}
+                data-reveal-item
                 className={`sketch-card text-center p-6 ${index === 0 ? "tilt-l" : index === 2 ? "tilt-r" : ""}`}
               >
                 <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-[var(--ink)] text-[var(--paper)]">
@@ -174,7 +163,7 @@ export function HowItWorksSection() {
                 <p className="text-sm leading-relaxed text-[var(--ink-muted)]">
                   {point.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

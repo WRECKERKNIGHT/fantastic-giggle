@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Brain, Timer, Target, Flame, AlertCircle } from "lucide-react";
 
 export function WhatYoullDoSection() {
@@ -11,17 +10,12 @@ export function WhatYoullDoSection() {
 
       <div className="relative z-10 mx-auto max-w-5xl">
         {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mb-16 text-center"
-        >
+        <div data-reveal="blur-in" className="mb-16 text-center">
           <span className="stamp mb-6">THE CHALLENGE</span>
           <h2 className="mt-6 font-[var(--font-display)] text-5xl font-black uppercase sm:text-6xl">
             <span className="sketch-underline">What you&apos;ll have to do</span>
           </h2>
-        </motion.div>
+        </div>
 
         {/* Steps */}
         <div className="space-y-8">
@@ -55,12 +49,10 @@ export function WhatYoullDoSection() {
               icon: <Timer className="h-6 w-6" />,
             },
           ].map((item, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.15 }}
+              data-reveal={index % 2 === 0 ? "slide-left" : "slide-right"}
+              data-reveal-delay={String(index * 0.12)}
               className={`sketch-card-thin flex items-center gap-6 p-8 ${index % 2 === 0 ? "tilt-l" : "tilt-r"}`}
             >
               {/* Step number plate */}
@@ -82,24 +74,19 @@ export function WhatYoullDoSection() {
                   {item.description}
                 </p>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
 
         {/* Warning */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-16 text-center"
-        >
+        <div data-reveal="scale" data-reveal-delay="0.2" className="mt-16 text-center">
           <div className="inline-flex items-center gap-3 border-2 border-[var(--ink-line)] bg-[var(--paper-card)] px-6 py-3 shadow-[3px_3px_0_rgba(20,17,12,0.7)]">
             <AlertCircle className="h-5 w-5 text-[var(--ink)]" />
             <span className="font-[var(--font-mono)] text-sm font-semibold text-[var(--ink)]">
               AVERAGE COMPLETION TIME: 8-12 MINUTES. NO PAUSING ALLOWED.
             </span>
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
